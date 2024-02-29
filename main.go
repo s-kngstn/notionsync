@@ -2,12 +2,39 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
 )
+
+// Define Go structs to map the JSON structure, focusing on parts of interest
+type Block struct {
+	Object    string    `json:"object"`
+	ID        string    `json:"id"`
+	Paragraph Paragraph `json:"paragraph"`
+}
+
+type Paragraph struct {
+	RichText []RichText `json:"rich_text"`
+	Color    string     `json:"color"`
+}
+
+type RichText struct {
+	Type string `json:"type"`
+	Text Text   `json:"text"`
+}
+
+type Text struct {
+	Content string `json:"content"`
+	// Include other fields if needed
+}
+
+type ResultsWrapper struct {
+	Results []Block `json:"results"`
+}
 
 // Function to make the API call with Authorization header
 func callAPI(customID, bearerToken string) {

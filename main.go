@@ -73,31 +73,23 @@ func callAPI(customID, bearerToken string) {
 		return
 	}
 
-	// Printing the response body to the console
-	fmt.Println("Response from API:", string(body))
+	// Unmarshal the JSON data into the ResultsWrapper struct
+	var results ResultsWrapper
+	if err := json.Unmarshal(body, &results); err != nil {
+		fmt.Println("Error parsing JSON:", err)
+		return
+	}
+
+	// Iterate through results to extract and print rich text content and type
+	for _, block := range results.Results {
+		fmt.Printf("Block ID: %s\n", block.ID)
+		for _, rt := range block.Paragraph.RichText {
+			fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
+		}
+	}
+	// // Printing the response body to the console
+	// fmt.Println("Response from API:", string(body))
 }
-
-// func callAPI(customID string) {
-// 	url := fmt.Sprintf("https://api.notion.com/v1/blocks/%s/children?page_size=100", customID)
-
-// 	// Sending the GET request
-// 	resp, err := http.Get(url)
-// 	if err != nil {
-// 		fmt.Println("Error fetching data:", err)
-// 		return
-// 	}
-// 	defer resp.Body.Close()
-
-// 	// Reading the response body
-// 	body, err := ioutil.ReadAll(resp.Body)
-// 	if err != nil {
-// 		fmt.Println("Error reading response body:", err)
-// 		return
-// 	}
-
-// 	// Printing the response body to the console
-// 	fmt.Println("Response from API:", string(body))
-// }
 
 func main() {
 	// Define a command-line flag
@@ -111,6 +103,7 @@ func main() {
 	url, _ := reader.ReadString('\n')
 	url = strings.TrimSpace(url)
 
+	// @todo: the url text before the UUID is the h1 title of the page you want to sync
 	// Check if the URL was provided
 	if url == "" {
 		fmt.Println("URL is required")

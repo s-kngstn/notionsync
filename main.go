@@ -104,6 +104,7 @@ func main() {
 	url = strings.TrimSpace(url)
 
 	// @todo: the url text before the UUID is the h1 title of the page you want to sync
+	// @todo: this needs tests
 	// Check if the URL was provided
 	if url == "" {
 		fmt.Println("URL is required")

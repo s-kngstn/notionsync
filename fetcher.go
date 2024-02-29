@@ -14,6 +14,7 @@ func FetchDataBlockString(url string) (string, error) {
 	uuidParts := strings.Split(lastPart, "-")
 	// The UUID is the last element after the split
 	uuid := uuidParts[len(uuidParts)-1]
+	fmt.Println("UUID:", uuid)
 
 	// Check if UUID is not empty
 	if uuid == "" {

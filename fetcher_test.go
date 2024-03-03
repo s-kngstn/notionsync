@@ -5,7 +5,6 @@ import (
 )
 
 func TestFetchDataBlockString(t *testing.T) {
-	// Define test cases
 	tests := []struct {
 		name    string
 		url     string
@@ -13,22 +12,40 @@ func TestFetchDataBlockString(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "valid URL with block id",
-			url:     "https://www.notion.so/samkingston/Daily-Notes-f1ca882898194427b92d0af12d73633a",
+			name:    "valid URL with standard UUID",
+			url:     "https://www.test.com/c/e20d841f-36c8-402e-bbaf-328a2aa4247f",
+			want:    "e20d841f-36c8-402e-bbaf-328a2aa4247f",
+			wantErr: false,
+		},
+		{
+			name:    "valid URL with dashed words before UUID",
+			url:     "https://www.test.so/samkingston/Daily-Notes-f1ca882898194427b92d0af12d73633a",
 			want:    "f1ca882898194427b92d0af12d73633a",
 			wantErr: false,
 		},
 		{
-			name:    "short url with block id",
-			url:     "notion.so/samkingston/Daily-Notes-f1ca882898194427b92d0af12d73633a",
-			want:    "f1ca882898194427b92d0af12d73633a",
+			name:    "valid URL with compact UUID",
+			url:     "https://example.com/resource/123e4567e89b12d3a456426614174000",
+			want:    "123e4567e89b12d3a456426614174000",
 			wantErr: false,
+		},
+		{
+			name:    "URL without UUID",
+			url:     "https://example.com/no-uuid-here",
+			want:    "",
+			wantErr: true,
 		},
 		{
 			name:    "empty URL",
 			url:     "",
 			want:    "",
 			wantErr: true,
+		},
+		{
+			name:    "URL with additional path elements after UUID",
+			url:     "https://www.test.so/samkingston/f1ca882898194427b92d0af12d73633a/some/other/path",
+			want:    "f1ca882898194427b92d0af12d73633a",
+			wantErr: false,
 		},
 		// Add more test cases as needed
 	}

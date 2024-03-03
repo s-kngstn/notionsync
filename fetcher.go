@@ -2,19 +2,26 @@ package main
 
 import (
 	"fmt"
+	"net/url"
 	"regexp"
 )
 
 // Assumes this function does something with the UUID extracted from the URL.
 // The implementation would depend on what you want to do with the UUID.
-func FetchDataBlockString(url string) (string, error) {
-	extracted, uuid := extractUUIDFromURL(url)
+func FetchDataBlockString(inputURL string) (string, error) {
+	// Check if the input string is a valid URL
+	parsedURL, err := url.Parse(inputURL)
+	if err != nil || parsedURL.Scheme == "" || parsedURL.Host == "" {
+		return "", fmt.Errorf("invalid URL")
+	}
+
+	// Proceed with UUID extraction from the valid URL
+	extracted, uuid := extractUUIDFromURL(inputURL)
 	if !extracted {
 		return "", fmt.Errorf("no UUID found in URL")
 	}
 
-	// Placeholder for where you'd use the UUID, e.g., fetching data from an API.
-	// For demonstration, let's just return the UUID.
+	// Placeholder for further processing with the UUID
 	return uuid, nil
 }
 

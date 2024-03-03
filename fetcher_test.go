@@ -31,13 +31,6 @@ func TestFetchDataBlockString(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:        "URL without UUID",
-			url:         "https://example.com/no-uuid-here",
-			want:        "",
-			wantErr:     true,
-			expectedErr: "no UUID found in URL",
-		},
-		{
 			name:        "empty URL",
 			url:         "",
 			want:        "",

@@ -1,26 +1,53 @@
 package main
 
 import (
-	"flag"
+	"bufio"
 	"fmt"
+	"net/http"
+	"os"
+	"strings"
+
+	"github.com/s-kngstn/notionsync/api" // This is the adjusted import path
 )
 
 func main() {
-	// Define a command-line flag
-	var url string
-	flag.StringVar(&url, "url", "", "URL to extract the UUID from")
-	flag.Parse()
+	reader := bufio.NewReader(os.Stdin)
 
-	// Check if the URL was provided
-	if url == "" {
-		fmt.Println("URL is required")
-		return
+	var uuid string
+	var err error
+
+	for {
+		fmt.Print("Please enter the URL: ")
+		url, _ := reader.ReadString('\n')
+		url = strings.TrimSpace(url)
+
+		// Check if the URL was provided
+		if url == "" {
+			fmt.Println("URL is required, please try again.")
+			continue // Skip the rest of the loop and prompt again
+		}
+
+		uuid, err = FetchDataBlockString(url)
+		if err != nil {
+			fmt.Printf("Error: %v. Please try again.\n", err)
+			continue // If an error occurs (e.g., no UUID found), prompt for the URL again
+		}
+
+		fmt.Printf("Extracted UUID: %s\n", uuid)
+		break // Exit the loop if a valid UUID is found
 	}
 
-	uuid, err := FetchDataBlockString(url)
+	// Initialize the API client with http.Client
+	client := &http.Client{}
+	apiClient := api.NewNotionApiClient(client) // Assuming this is the constructor function
+	// @todo have user provide their own bearer token
+	// Set the bearer token
+	bearerToken := "secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK"
+	// Call the API with the extracted UUID
+	err = apiClient.CallAPI(uuid, bearerToken)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("API call error: %v\n", err)
 	} else {
-		fmt.Printf("Extracted UUID: %s\n", uuid)
+		fmt.Println("API call was successful.")
 	}
 }

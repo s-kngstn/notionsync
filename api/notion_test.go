@@ -2,7 +2,8 @@ package api
 
 import (
 	"bytes"
-	"io/ioutil"
+	"errors"
+	"io"
 	"net/http"
 	"testing"
 )
@@ -24,7 +25,7 @@ func TestCallAPI_Success(t *testing.T) {
 	mockClient := &MockHttpClient{
 		Response: &http.Response{
 			StatusCode: 200,
-			Body:       ioutil.NopCloser(bytes.NewBufferString(mockRespBody)),
+			Body:       io.NopCloser(bytes.NewBufferString(mockRespBody)),
 			Header:     make(http.Header),
 		},
 		Err: nil,
@@ -38,12 +39,43 @@ func TestCallAPI_Success(t *testing.T) {
 	// Additional assertions can be added here to check the behavior
 }
 
-// Example test for an API error response
-func TestCallAPI_ApiError(t *testing.T) {
-	// Similar to TestCallAPI_Success, but simulate an API error response
+func TestCallAPI_ErrorResponse(t *testing.T) {
+	// Setup
+	mockRespBody := `{"object":"error","status":400,"code":"invalid_request","message":"Invalid Request"}`
+	mockClient := &MockHttpClient{
+		Response: &http.Response{
+			StatusCode: 400,
+			Body:       io.NopCloser(bytes.NewBufferString(mockRespBody)),
+		},
+		Err: nil,
+	}
+	apiClient := NewNotionApiClient(mockClient)
+
+	// Execute
+	err := apiClient.CallAPI("invalidID", "validToken")
+
+	// Assert
+	if err == nil {
+		t.Errorf("Expected an error, got nil")
+	}
+	if err != nil && err.Error() != "API Error: invalid_request - Invalid Request" {
+		t.Errorf("Unexpected error message: %v", err)
+	}
 }
 
-// Example test for a network error
-func TestCallAPI_NetworkError(t *testing.T) {
-	// Similar to TestCallAPI_Success, but simulate a network error using the Err field of MockHttpClient
+func TestCallAPI_HttpError(t *testing.T) {
+	// Setup
+	mockClient := &MockHttpClient{
+		Response: nil,
+		Err:      errors.New("network error"),
+	}
+	apiClient := NewNotionApiClient(mockClient)
+
+	// Execute
+	err := apiClient.CallAPI("anyID", "validToken")
+
+	// Assert
+	if err == nil || err.Error() != "error sending request: network error" {
+		t.Errorf("Expected network error, got %v", err)
+	}
 }

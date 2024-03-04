@@ -17,6 +17,10 @@ func main() {
 	var err error
 
 	for {
+		userInput := RealUserInput{}
+		token := PromptForToken(userInput)
+		PersistToken(token)
+
 		fmt.Print("Please enter the URL: ")
 		url, _ := reader.ReadString('\n')
 		url = strings.TrimSpace(url)
@@ -42,7 +46,9 @@ func main() {
 	apiClient := api.NewNotionApiClient(client) // Assuming this is the constructor function
 	// @todo have user provide their own bearer token
 	// Set the bearer token
-	bearerToken := "secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK"
+	// bearerToken := "secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK"
+	bearerToken := os.Getenv("NOTION_BEARER_TOKEN")
+
 	// Call the API with the extracted UUID
 	err = apiClient.CallAPI(uuid, bearerToken)
 	if err != nil {

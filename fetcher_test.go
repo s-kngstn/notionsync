@@ -35,7 +35,7 @@ func TestFetchDataBlockString(t *testing.T) {
 			url:         "",
 			want:        "",
 			wantErr:     true,
-			expectedErr: "invalid URL",
+			expectedErr: "invalid URL: missing scheme or host",
 		},
 		{
 			name:    "URL with additional path elements after UUID",
@@ -48,7 +48,7 @@ func TestFetchDataBlockString(t *testing.T) {
 			url:         "just a random string",
 			want:        "",
 			wantErr:     true,
-			expectedErr: "invalid URL",
+			expectedErr: "invalid URL: missing scheme or host",
 		},
 		{
 			name:        "URL without UUID",

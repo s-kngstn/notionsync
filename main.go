@@ -1,34 +1,26 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
-	"github.com/s-kngstn/notionsync/api" // This is the adjusted import path
+	"github.com/s-kngstn/notionsync/api"
 )
 
 func main() {
-	reader := bufio.NewReader(os.Stdin)
-
 	var uuid string
 	var err error
 
 	for {
 		userInput := RealUserInput{}
-		token := PromptForToken(userInput)
+		token := Prompt(userInput, "Please enter the Notion API bearer token: ")
 		PersistToken(token)
 
-		fmt.Print("Please enter the URL: ")
-		url, _ := reader.ReadString('\n')
-		url = strings.TrimSpace(url)
-
-		// Check if the URL was provided
+		url := Prompt(userInput, "Please enter the Notion page URL: ")
 		if url == "" {
 			fmt.Println("URL is required, please try again.")
-			continue // Skip the rest of the loop and prompt again
+			continue
 		}
 
 		uuid, err = FetchDataBlockString(url)
@@ -43,7 +35,7 @@ func main() {
 
 	// Initialize the API client with http.Client
 	client := &http.Client{}
-	apiClient := api.NewNotionApiClient(client) // Assuming this is the constructor function
+	apiClient := api.NewNotionApiClient(client)
 	// @todo have user provide their own bearer token
 	// Set the bearer token
 	// bearerToken := "secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK"

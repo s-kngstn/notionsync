@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 )
 
 // APIErrorResponse represents JSON error responses from the API
@@ -90,10 +91,23 @@ func (api *NotionApiClient) CallAPI(customID, bearerToken string) error {
 		return fmt.Errorf("error parsing JSON: %w", err)
 	}
 
+	// Open a new file for writing, create if not exists, truncate if exists
+	outputPath := "test.md"
+	file, err := os.Create(outputPath)
+	if err != nil {
+		return fmt.Errorf("error creating markdown file: %w", err)
+	}
+	defer file.Close()
+
 	// Process the results as needed
 	for _, block := range results.Results {
-		fmt.Printf("Block ID: %s\n", block.ID)
+		// fmt.Printf("Block ID: %s\n", block.ID)
 		for _, rt := range block.Paragraph.RichText {
+			// This example directly writes the content. You might want to format it as valid Markdown.
+			_, err := file.WriteString(rt.Text.Content + "\n\n") // Add two newlines
+			if err != nil {
+				return fmt.Errorf("error writing to markdown file: %w", err)
+			}
 			fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
 		}
 	}

@@ -104,7 +104,8 @@ func (api *NotionApiClient) CallAPI(customID, bearerToken string) error {
 		// fmt.Printf("Block ID: %s\n", block.ID)
 		for _, rt := range block.Paragraph.RichText {
 			// This example directly writes the content. You might want to format it as valid Markdown.
-			_, err := file.WriteString(rt.Text.Content + "\n\n") // Add two newlines
+			_, err := file.WriteString(rt.Text.Content + "\n")
+			// When we return a block that is empty then we'll Add two newlines
 			if err != nil {
 				return fmt.Errorf("error writing to markdown file: %w", err)
 			}

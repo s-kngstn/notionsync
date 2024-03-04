@@ -18,7 +18,7 @@ func FetchDataBlockString(inputURL string) (string, error) {
 		return "", fmt.Errorf("invalid URL: missing scheme or host")
 	}
 
-	extracted, uuid := extractUUIDFromURL(inputURL)
+	extracted, uuid := extractUUID(inputURL)
 	if !extracted {
 		return "", fmt.Errorf("no UUID found in URL")
 	}
@@ -26,7 +26,7 @@ func FetchDataBlockString(inputURL string) (string, error) {
 	return uuid, nil
 }
 
-func extractUUIDFromURL(url string) (bool, string) {
+func extractUUID(url string) (bool, string) {
 	// Regex pattern that matches both standard and compact forms of UUIDs
 	uuidPattern := `([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})|([0-9a-fA-F]{32})`
 	regex := regexp.MustCompile(uuidPattern)

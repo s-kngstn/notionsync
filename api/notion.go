@@ -22,17 +22,47 @@ type ResultsWrapper struct {
 }
 
 type Block struct {
-	ID        string `json:"id"`
-	Paragraph struct {
-		RichText []RichText `json:"rich_text"`
-	} `json:"paragraph"`
+	ID        string     `json:"id"`
+	Type      string     `json:"type"`
+	Heading1  *Heading   `json:"heading_1,omitempty"`
+	Heading2  *Heading   `json:"heading_2,omitempty"`
+	Paragraph *Paragraph `json:"paragraph,omitempty"`
+	// Paragraph struct {
+	// 	RichText []RichText `json:"rich_text"`
+	// } `json:"paragraph"`
 }
 
+// Heading represents a generic heading, which could be used for both heading_1, heading_2, etc.
+type Heading struct {
+	RichText []RichText `json:"rich_text"`
+	// Add other fields specific to headings if necessary
+}
+type Paragraph struct {
+	RichText []RichText `json:"rich_text"`
+}
+
+//	type RichText struct {
+//		Type string `json:"type"`
+//		Text struct {
+//			Content string `json:"content"`
+//		} `json:"text"`
+//	}
 type RichText struct {
 	Type string `json:"type"`
 	Text struct {
-		Content string `json:"content"`
+		Content string  `json:"content"`
+		Link    *string `json:"link,omitempty"`
 	} `json:"text"`
+	Annotations struct {
+		Bold          bool   `json:"bold"`
+		Italic        bool   `json:"italic"`
+		Strikethrough bool   `json:"strikethrough"`
+		Underline     bool   `json:"underline"`
+		Code          bool   `json:"code"`
+		Color         string `json:"color"`
+	} `json:"annotations"`
+	PlainText string  `json:"plain_text"`
+	Href      *string `json:"href,omitempty"`
 }
 
 // HttpClientInterface defines the interface for the HTTP client
@@ -101,17 +131,75 @@ func (api *NotionApiClient) CallAPI(customID, bearerToken string) error {
 
 	// Process the results as needed
 	for _, block := range results.Results {
-		// fmt.Printf("Block ID: %s\n", block.ID)
-		for _, rt := range block.Paragraph.RichText {
-			// This example directly writes the content. You might want to format it as valid Markdown.
-			_, err := file.WriteString(rt.Text.Content + "\n")
-			// When we return a block that is empty then we'll Add two newlines
-			if err != nil {
-				return fmt.Errorf("error writing to markdown file: %w", err)
+		fmt.Printf("Block ID: %s\n", block.ID)
+		fmt.Printf("Block Type: %s\n", block.Type)
+
+		// Check if block is of type Heading1 and Heading1 is not nil
+		if block.Type == "heading_1" && block.Heading1 != nil {
+			for _, rt := range block.Heading1.RichText {
+				_, err := file.WriteString(rt.Text.Content + "\n")
+				if err != nil {
+					return fmt.Errorf("error writing to markdown file: %w", err)
+				}
+				fmt.Printf("Heading 1 - Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
 			}
-			fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
+		}
+
+		// Similarly, check if block is of type Heading2 and Heading2 is not nil
+		if block.Type == "heading_2" && block.Heading2 != nil {
+			for _, rt := range block.Heading2.RichText {
+				_, err := file.WriteString(rt.Text.Content + "\n")
+				if err != nil {
+					return fmt.Errorf("error writing to markdown file: %w", err)
+				}
+				fmt.Printf("Heading 2 - Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
+			}
+		}
+
+		// Since your example doesn't show a Paragraph field in the JSON, I assume this is a similar case.
+		// Check if Paragraph is not nil before accessing its RichText
+		if block.Type == "paragraph" && block.Paragraph != nil { // Assuming there's a condition to identify Paragraph blocks
+			for _, rt := range block.Paragraph.RichText {
+				_, err := file.WriteString(rt.Text.Content + "\n")
+				if err != nil {
+					return fmt.Errorf("error writing to markdown file: %w", err)
+				}
+				fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
+			}
 		}
 	}
+
+	// for _, block := range results.Results {
+	// 	fmt.Printf("Block ID: %s\n", block.ID)
+	// 	fmt.Printf("Block Type: %s\n", block.Type)
+	// 	for _, rt := range block.Heading1.RichText {
+	// 		// This example directly writes the content. You might want to format it as valid Markdown.
+	// 		_, err := file.WriteString(rt.Text.Content + "\n")
+	// 		// When we return a block that is empty then we'll Add two newlines
+	// 		if err != nil {
+	// 			return fmt.Errorf("error writing to markdown file: %w", err)
+	// 		}
+	// 		fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
+	// 	}
+	// 	for _, rt := range block.Heading1.RichText {
+	// 		// This example directly writes the content. You might want to format it as valid Markdown.
+	// 		_, err := file.WriteString(rt.Text.Content + "\n")
+	// 		// When we return a block that is empty then we'll Add two newlines
+	// 		if err != nil {
+	// 			return fmt.Errorf("error writing to markdown file: %w", err)
+	// 		}
+	// 		fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
+	// 	}
+	// 	for _, rt := range block.Paragraph.RichText {
+	// 		// This example directly writes the content. You might want to format it as valid Markdown.
+	// 		_, err := file.WriteString(rt.Text.Content + "\n")
+	// 		// When we return a block that is empty then we'll Add two newlines
+	// 		if err != nil {
+	// 			return fmt.Errorf("error writing to markdown file: %w", err)
+	// 		}
+	// 		fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
+	// 	}
+	// }
 
 	return nil // Return nil if everything was successful
 }

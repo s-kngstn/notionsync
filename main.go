@@ -6,8 +6,10 @@ import (
 	"os"
 
 	"github.com/s-kngstn/notionsync/api"
+	"github.com/s-kngstn/notionsync/format"
 )
 
+// WriteBlocksToMarkdown writes the contents of fetched blocks to a Markdown file.
 func main() {
 	var uuid string
 	var err error
@@ -42,10 +44,15 @@ func main() {
 	bearerToken := os.Getenv("NOTION_BEARER_TOKEN")
 
 	// Call the API with the extracted UUID
-	err = apiClient.CallAPI(uuid, bearerToken)
+	results, err := apiClient.GetNotionBlocks(uuid, bearerToken)
 	if err != nil {
-		fmt.Printf("API call error: %v\n", err)
-	} else {
-		fmt.Println("API call was successful.")
+		fmt.Println("Error calling API:", err)
+		return
+	}
+
+	// Now process and write the results to a Markdown file
+	outputPath := "output/test.md"
+	if err := format.WriteBlocksToMarkdown(results, outputPath); err != nil {
+		fmt.Println("Error writing blocks to Markdown:", err)
 	}
 }

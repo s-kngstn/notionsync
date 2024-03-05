@@ -51,7 +51,7 @@ func main() {
 	}
 
 	// Now process and write the results to a Markdown file
-	outputPath := "test.md"
+	outputPath := "output/test.md"
 	if err := format.WriteBlocksToMarkdown(results, outputPath); err != nil {
 		fmt.Println("Error writing blocks to Markdown:", err)
 	}

@@ -51,3 +51,13 @@ type RichText struct {
 type RichTextProvider interface {
 	GetRichText() []RichText
 }
+
+// Implement GetRichText for Heading
+func (h *Heading) GetRichText() []RichText {
+	return h.RichText
+}
+
+// Implement GetRichText for Paragraph
+func (p *Paragraph) GetRichText() []RichText {
+	return p.RichText
+}

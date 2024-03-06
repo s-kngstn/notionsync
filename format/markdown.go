@@ -20,6 +20,11 @@ func applyAnnotationsToContent(rt api.RichText) string {
 		formattedText = "*" + formattedText + "*"
 	}
 
+	// Apply Markdown syntax for both bold and italic
+	if rt.Annotations.Bold && rt.Annotations.Italic {
+		formattedText = "***" + formattedText + "***"
+	}
+
 	// Future enhancements here for other annotations like strikethrough, underline, etc.
 
 	// Apply Markdown syntax for links

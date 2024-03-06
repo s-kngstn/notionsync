@@ -7,24 +7,27 @@ import (
 
 	"github.com/s-kngstn/notionsync/api"
 	"github.com/s-kngstn/notionsync/format"
+	"github.com/s-kngstn/notionsync/pkg/cli"
+	"github.com/s-kngstn/notionsync/pkg/fetch"
+	"github.com/s-kngstn/notionsync/pkg/token"
 )
 
 func main() {
 	var uuid, url string
 	var err error
 
-	userInput := RealUserInput{}
-	token := Prompt(userInput, "Please enter the Notion API bearer token: ")
-	PersistToken(token)
+	userInput := cli.RealUserInput{} // Assuming RealUserInput is now in the cli package
+	tokenValue := cli.Prompt(userInput, "Please enter the Notion API bearer token: ")
+	token.PersistToken(tokenValue) // Assuming PersistToken is in the token package
 
 	for {
-		url = Prompt(userInput, "Please enter the Notion page URL: ")
+		url = cli.Prompt(userInput, "Please enter the Notion page URL: ")
 		if url == "" {
 			fmt.Println("URL is required, please try again.")
 			continue
 		}
 
-		uuid, err = FetchDataBlockString(url)
+		uuid, err = fetch.FetchDataBlockString(url) // Assuming FetchDataBlockString is now in the fetch package
 		if err != nil {
 			fmt.Printf("Error: %v. Please try again.\n", err)
 			continue // If an error occurs (e.g., no UUID found), prompt for the URL again
@@ -35,7 +38,7 @@ func main() {
 	}
 
 	// Extract the page name from the URL and use it as the filename
-	pageName, err := ExtractNameFromURL(url)
+	pageName, err := fetch.ExtractNameFromURL(url) // Assuming ExtractNameFromURL is in the fetch package
 	if err != nil {
 		fmt.Println("Error extracting page name from URL:", err)
 		return
@@ -46,7 +49,6 @@ func main() {
 	apiClient := api.NewNotionApiClient(client)
 
 	// Set the bearer token
-	// bearerToken := "secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK"
 	bearerToken := os.Getenv("NOTION_BEARER_TOKEN")
 
 	// Call the API with the extracted UUID
@@ -57,7 +59,6 @@ func main() {
 	}
 
 	// Now process and write the results to a Markdown file
-	// outputPath := "output/test.md"
 	if err := format.WriteBlocksToMarkdown(results, outputPath); err != nil {
 		fmt.Println("Error writing blocks to Markdown:", err)
 	}

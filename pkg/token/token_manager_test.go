@@ -1,5 +1,4 @@
-// token_manager_test.go
-package main
+package token
 
 import (
 	"os"

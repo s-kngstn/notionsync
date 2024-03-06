@@ -10,19 +10,15 @@ import (
 func applyAnnotationsToContent(rt api.RichText) string {
 	formattedText := rt.Text.Content
 
-	// Apply Markdown syntax for bold
-	if rt.Annotations.Bold {
-		formattedText = "**" + formattedText + "**"
-	}
-
-	// Apply Markdown syntax for italic
-	if rt.Annotations.Italic {
-		formattedText = "*" + formattedText + "*"
-	}
-
 	// Apply Markdown syntax for both bold and italic
 	if rt.Annotations.Bold && rt.Annotations.Italic {
 		formattedText = "***" + formattedText + "***"
+	} else if rt.Annotations.Bold {
+		// Apply Markdown syntax for bold
+		formattedText = "**" + formattedText + "**"
+	} else if rt.Annotations.Italic {
+		// Apply Markdown syntax for italic
+		formattedText = "*" + formattedText + "*"
 	}
 
 	// Future enhancements here for other annotations like strikethrough, underline, etc.

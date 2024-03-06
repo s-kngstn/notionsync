@@ -77,6 +77,9 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 		case "heading_3":
 			provider = block.Heading3
 			markdownPrefix = "### "
+		case "bulleted_list_item":
+			provider = block.Bulleted
+			markdownPrefix = "- "
 		case "paragraph":
 			provider = block.Paragraph
 			markdownPrefix = "" // No prefix needed for paragraphs

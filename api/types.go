@@ -18,6 +18,7 @@ type Block struct {
 	Heading1  *Heading   `json:"heading_1,omitempty"`
 	Heading2  *Heading   `json:"heading_2,omitempty"`
 	Heading3  *Heading   `json:"heading_3,omitempty"`
+	Bulleted  *ListItem  `json:"bulleted_list_item,omitempty"`
 	Paragraph *Paragraph `json:"paragraph,omitempty"`
 }
 
@@ -26,6 +27,10 @@ type Heading struct {
 	RichText []RichText `json:"rich_text"`
 }
 type Paragraph struct {
+	RichText []RichText `json:"rich_text"`
+}
+
+type ListItem struct {
 	RichText []RichText `json:"rich_text"`
 }
 
@@ -66,5 +71,10 @@ func (h *Heading) GetRichText() []RichText {
 
 // Implement GetRichText for Paragraph
 func (p *Paragraph) GetRichText() []RichText {
+	return p.RichText
+}
+
+// Implement GetRichText for Paragraph
+func (p *ListItem) GetRichText() []RichText {
 	return p.RichText
 }

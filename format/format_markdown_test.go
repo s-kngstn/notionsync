@@ -9,6 +9,28 @@ import (
 	"github.com/s-kngstn/notionsync/api"
 )
 
+func TestToTitleCase(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"test", "Test"},
+		{"multiple words test", "Multiple Words Test"},
+		{"test-hyphenated-words", "Test Hyphenated Words"},
+		{"mIxEd CaSe", "Mixed Case"},
+		{"testing with in and on", "Testing With In And On"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			got := toTitleCase(tt.input) // Call your toTitleCase function
+			if got != tt.expected {
+				t.Errorf("toTitleCase(%q) = %q, want %q", tt.input, got, tt.expected)
+			}
+		})
+	}
+}
+
 func TestApplyAnnotationsToContent(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -87,7 +109,8 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 	}
 
 	outputPath := "./test_output.md"
-	if err := WriteBlocksToMarkdown(results, outputPath); err != nil {
+	pageName := "Test Page" // Add a mock page name for testing
+	if err := WriteBlocksToMarkdown(results, outputPath, pageName); err != nil {
 		t.Errorf("WriteBlocksToMarkdown returned an error: %v", err)
 	}
 
@@ -101,8 +124,11 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to read file: %v", err)
 	}
-	if !strings.Contains(string(content), "Hello World") {
-		t.Errorf("File content does not contain expected text. Got: %v", string(content))
+
+	// Check if the content contains the expected page title and body text
+	expectedTitle := "# Test Page\n\n" // Adjust according to how the title is formatted
+	if !strings.Contains(string(content), expectedTitle) || !strings.Contains(string(content), "Hello World") {
+		t.Errorf("File content does not contain expected text. Expected title %q and body text 'Hello World'. Got: %v", expectedTitle, string(content))
 	}
 
 	// Clean up

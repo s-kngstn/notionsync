@@ -7,6 +7,29 @@ import (
 	"github.com/s-kngstn/notionsync/api"
 )
 
+func applyAnnotationsToContent(rt api.RichText) string {
+	formattedText := rt.Text.Content
+
+	// Apply Markdown syntax for bold
+	if rt.Annotations.Bold {
+		formattedText = "**" + formattedText + "**"
+	}
+
+	// Apply Markdown syntax for italic
+	if rt.Annotations.Italic {
+		formattedText = "*" + formattedText + "*"
+	}
+
+	// Future enhancements here for other annotations like strikethrough, underline, etc.
+
+	// Apply Markdown syntax for links
+	if rt.Text.Link != nil && rt.Text.Link.URL != nil {
+		formattedText = "[" + formattedText + "](" + *rt.Text.Link.URL + ")"
+	}
+
+	return formattedText
+}
+
 func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string) error {
 	file, err := os.Create(outputPath)
 	if err != nil {
@@ -38,7 +61,7 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string) error
 
 		if provider != nil {
 			for _, rt := range provider.GetRichText() {
-				formattedContent := markdownPrefix + rt.Text.Content + "\n"
+				formattedContent := markdownPrefix + applyAnnotationsToContent(rt) + "\n"
 				_, err := file.WriteString(formattedContent)
 				if err != nil {
 					return fmt.Errorf("error writing to markdown file: %w", err)

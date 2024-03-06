@@ -32,23 +32,26 @@ type Paragraph struct {
 type LinkObject struct {
 	URL *string `json:"url,omitempty"`
 }
+type Text struct {
+	Content string      `json:"content"`
+	Link    *LinkObject `json:"link,omitempty"`
+}
+
+type Annotations struct {
+	Bold          bool   `json:"bold"`
+	Italic        bool   `json:"italic"`
+	Strikethrough bool   `json:"strikethrough"`
+	Underline     bool   `json:"underline"`
+	Code          bool   `json:"code"`
+	Color         string `json:"color"`
+}
 
 type RichText struct {
-	Type string `json:"type"`
-	Text struct {
-		Content string      `json:"content"`
-		Link    *LinkObject `json:"link,omitempty"`
-	} `json:"text"`
-	Annotations struct {
-		Bold          bool   `json:"bold"`
-		Italic        bool   `json:"italic"`
-		Strikethrough bool   `json:"strikethrough"`
-		Underline     bool   `json:"underline"`
-		Code          bool   `json:"code"`
-		Color         string `json:"color"`
-	} `json:"annotations"`
-	PlainText string  `json:"plain_text"`
-	Href      *string `json:"href,omitempty"`
+	Type        string      `json:"type"`
+	Text        Text        `json:"text"`
+	Annotations Annotations `json:"annotations"`
+	PlainText   string      `json:"plain_text"`
+	Href        *string     `json:"href,omitempty"`
 }
 
 // RichTextProvider interface for blocks that contain Rich Text

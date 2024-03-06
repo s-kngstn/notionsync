@@ -9,9 +9,8 @@ import (
 	"github.com/s-kngstn/notionsync/format"
 )
 
-// WriteBlocksToMarkdown writes the contents of fetched blocks to a Markdown file.
 func main() {
-	var uuid string
+	var uuid, url string
 	var err error
 
 	userInput := RealUserInput{}
@@ -19,7 +18,7 @@ func main() {
 	PersistToken(token)
 
 	for {
-		url := Prompt(userInput, "Please enter the Notion page URL: ")
+		url = Prompt(userInput, "Please enter the Notion page URL: ")
 		if url == "" {
 			fmt.Println("URL is required, please try again.")
 			continue
@@ -35,10 +34,17 @@ func main() {
 		break // Exit the loop if a valid UUID is found
 	}
 
-	// Initialize the API client with http.Client
+	// Extract the page name from the URL and use it as the filename
+	pageName, err := ExtractNameFromURL(url)
+	if err != nil {
+		fmt.Println("Error extracting page name from URL:", err)
+		return
+	}
+	outputPath := fmt.Sprintf("output/%s.md", pageName)
+
 	client := &http.Client{}
 	apiClient := api.NewNotionApiClient(client)
-	// @todo have user provide their own bearer token
+
 	// Set the bearer token
 	// bearerToken := "secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK"
 	bearerToken := os.Getenv("NOTION_BEARER_TOKEN")
@@ -51,7 +57,7 @@ func main() {
 	}
 
 	// Now process and write the results to a Markdown file
-	outputPath := "output/test.md"
+	// outputPath := "output/test.md"
 	if err := format.WriteBlocksToMarkdown(results, outputPath); err != nil {
 		fmt.Println("Error writing blocks to Markdown:", err)
 	}

@@ -125,6 +125,20 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 					RichText: []api.RichText{{Text: api.Text{Content: "List Item One"}}},
 				},
 			},
+			{
+				ID:   "6",
+				Type: "numbered_list_item",
+				Numbered: &api.ListItem{
+					RichText: []api.RichText{{Text: api.Text{Content: "List Item Two"}}},
+				},
+			},
+			{
+				ID:   "7",
+				Type: "numbered_list_item",
+				Numbered: &api.ListItem{
+					RichText: []api.RichText{{Text: api.Text{Content: "List Item Three"}}},
+				},
+			},
 		},
 	}
 
@@ -151,14 +165,18 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 	expectedHeading2 := "## Heading Two\n"
 	expectedHeading3 := "### Heading Three\n"
 	expectedListItem := "- List Item One\n"
+	expectedNumberedListItem := "1. List Item Two\n"
+	expectedNumberedListItem2 := "2. List Item Three\n"
 	if !strings.Contains(string(content), expectedTitle) ||
 		!strings.Contains(string(content), "Hello World") ||
 		!strings.Contains(string(content), expectedHeading1) ||
 		!strings.Contains(string(content), expectedHeading2) ||
 		!strings.Contains(string(content), expectedHeading3) ||
-		!strings.Contains(string(content), expectedListItem) {
-		t.Errorf("File content does not contain expected text. Expected title %q, body text 'Hello World', headings %q, %q, %q, and list item %q. Got: %v",
-			expectedTitle, expectedHeading1, expectedHeading2, expectedHeading3, expectedListItem, string(content))
+		!strings.Contains(string(content), expectedListItem) ||
+		!strings.Contains(string(content), expectedNumberedListItem) ||
+		!strings.Contains(string(content), expectedNumberedListItem2) {
+		t.Errorf("File content does not contain expected text. Expected title %q, body text 'Hello World', headings %q, %q, %q, list items %q, %q, %q Got: %v",
+			expectedTitle, expectedHeading1, expectedHeading2, expectedHeading3, expectedListItem, expectedNumberedListItem, expectedNumberedListItem2, string(content))
 	}
 
 	// Clean up

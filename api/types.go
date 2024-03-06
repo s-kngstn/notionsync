@@ -19,6 +19,7 @@ type Block struct {
 	Heading2  *Heading   `json:"heading_2,omitempty"`
 	Heading3  *Heading   `json:"heading_3,omitempty"`
 	Bulleted  *ListItem  `json:"bulleted_list_item,omitempty"`
+	Numbered  *ListItem  `json:"numbered_list_item,omitempty"`
 	Paragraph *Paragraph `json:"paragraph,omitempty"`
 }
 
@@ -74,7 +75,7 @@ func (p *Paragraph) GetRichText() []RichText {
 	return p.RichText
 }
 
-// Implement GetRichText for Paragraph
+// Implement GetRichText for ListItem
 func (p *ListItem) GetRichText() []RichText {
 	return p.RichText
 }

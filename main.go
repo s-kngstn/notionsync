@@ -14,11 +14,11 @@ func main() {
 	var uuid string
 	var err error
 
-	for {
-		userInput := RealUserInput{}
-		token := Prompt(userInput, "Please enter the Notion API bearer token: ")
-		PersistToken(token)
+	userInput := RealUserInput{}
+	token := Prompt(userInput, "Please enter the Notion API bearer token: ")
+	PersistToken(token)
 
+	for {
 		url := Prompt(userInput, "Please enter the Notion page URL: ")
 		if url == "" {
 			fmt.Println("URL is required, please try again.")

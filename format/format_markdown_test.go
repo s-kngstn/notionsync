@@ -88,28 +88,62 @@ func TestApplyAnnotationsToContent(t *testing.T) {
 }
 
 func TestWriteBlocksToMarkdown(t *testing.T) {
-	// Mock data
 	results := &api.ResultsWrapper{
 		Results: []api.Block{
 			{
 				ID:   "1",
 				Type: "paragraph",
 				Paragraph: &api.Paragraph{
-					RichText: []api.RichText{
-						{
-							Text: api.Text{
-								Content: "Hello World",
-							},
-						},
-					},
+					RichText: []api.RichText{{Text: api.Text{Content: "Hello World"}}},
 				},
 			},
-			// Add more blocks as needed
+			{
+				ID:   "2",
+				Type: "heading_1",
+				Heading1: &api.Heading{
+					RichText: []api.RichText{{Text: api.Text{Content: "Heading One"}}},
+				},
+			},
+			{
+				ID:   "3",
+				Type: "heading_2",
+				Heading2: &api.Heading{
+					RichText: []api.RichText{{Text: api.Text{Content: "Heading Two"}}},
+				},
+			},
+			{
+				ID:   "4",
+				Type: "heading_3",
+				Heading3: &api.Heading{
+					RichText: []api.RichText{{Text: api.Text{Content: "Heading Three"}}},
+				},
+			},
+			{
+				ID:   "5",
+				Type: "bulleted_list_item",
+				Bulleted: &api.ListItem{
+					RichText: []api.RichText{{Text: api.Text{Content: "List Item One"}}},
+				},
+			},
+			{
+				ID:   "6",
+				Type: "numbered_list_item",
+				Numbered: &api.ListItem{
+					RichText: []api.RichText{{Text: api.Text{Content: "List Item Two"}}},
+				},
+			},
+			{
+				ID:   "7",
+				Type: "numbered_list_item",
+				Numbered: &api.ListItem{
+					RichText: []api.RichText{{Text: api.Text{Content: "List Item Three"}}},
+				},
+			},
 		},
 	}
 
 	outputPath := "./test_output.md"
-	pageName := "Test Page" // Add a mock page name for testing
+	pageName := "Test Page"
 	if err := WriteBlocksToMarkdown(results, outputPath, pageName); err != nil {
 		t.Errorf("WriteBlocksToMarkdown returned an error: %v", err)
 	}
@@ -125,10 +159,24 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 		t.Errorf("Failed to read file: %v", err)
 	}
 
-	// Check if the content contains the expected page title and body text
-	expectedTitle := "# Test Page\n\n" // Adjust according to how the title is formatted
-	if !strings.Contains(string(content), expectedTitle) || !strings.Contains(string(content), "Hello World") {
-		t.Errorf("File content does not contain expected text. Expected title %q and body text 'Hello World'. Got: %v", expectedTitle, string(content))
+	// Check for the expected title, paragraph, and all headings and list item in the content
+	expectedTitle := "# Test Page\n\n"
+	expectedHeading1 := "# Heading One\n"
+	expectedHeading2 := "## Heading Two\n"
+	expectedHeading3 := "### Heading Three\n"
+	expectedListItem := "- List Item One\n"
+	expectedNumberedListItem := "1. List Item Two\n"
+	expectedNumberedListItem2 := "2. List Item Three\n"
+	if !strings.Contains(string(content), expectedTitle) ||
+		!strings.Contains(string(content), "Hello World") ||
+		!strings.Contains(string(content), expectedHeading1) ||
+		!strings.Contains(string(content), expectedHeading2) ||
+		!strings.Contains(string(content), expectedHeading3) ||
+		!strings.Contains(string(content), expectedListItem) ||
+		!strings.Contains(string(content), expectedNumberedListItem) ||
+		!strings.Contains(string(content), expectedNumberedListItem2) {
+		t.Errorf("File content does not contain expected text. Expected title %q, body text 'Hello World', headings %q, %q, %q, list items %q, %q, %q Got: %v",
+			expectedTitle, expectedHeading1, expectedHeading2, expectedHeading3, expectedListItem, expectedNumberedListItem, expectedNumberedListItem2, string(content))
 	}
 
 	// Clean up

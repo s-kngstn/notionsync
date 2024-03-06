@@ -60,31 +60,52 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 		return fmt.Errorf("error writing to markdown file: %w", err)
 	}
 
+	listItemNumber := 1
+	processingNumberedList := false
 	for _, block := range results.Results {
 		fmt.Printf("Block ID: %s\n", block.ID)
 		fmt.Printf("Block Type: %s\n", block.Type)
 
 		var provider api.RichTextProvider
 		var markdownPrefix string
+		var formattedContent string
 
 		switch block.Type {
 		case "heading_1":
 			provider = block.Heading1
 			markdownPrefix = "# "
+			processingNumberedList = false
 		case "heading_2":
 			provider = block.Heading2
 			markdownPrefix = "## "
+			processingNumberedList = false
 		case "heading_3":
 			provider = block.Heading3
 			markdownPrefix = "### "
+			processingNumberedList = false
 		case "paragraph":
 			provider = block.Paragraph
 			markdownPrefix = "" // No prefix needed for paragraphs
+			processingNumberedList = false
+		case "bulleted_list_item":
+			provider = block.Bulleted
+			markdownPrefix = "- "
+			processingNumberedList = false
+		case "numbered_list_item":
+			if !processingNumberedList {
+				listItemNumber = 1 // Start numbering from 1 for a new list
+				processingNumberedList = true
+			} else {
+				listItemNumber++ // Increment if we're continuing a list
+			}
+			provider = block.Numbered
+			markdownPrefix = fmt.Sprintf("%d. ", listItemNumber)
+			// No reset here since we might be continuing the list
 		}
 
 		if provider != nil {
 			for _, rt := range provider.GetRichText() {
-				formattedContent := markdownPrefix + applyAnnotationsToContent(rt) + "\n"
+				formattedContent = markdownPrefix + applyAnnotationsToContent(rt) + "\n"
 				_, err := file.WriteString(formattedContent)
 				if err != nil {
 					return fmt.Errorf("error writing to markdown file: %w", err)

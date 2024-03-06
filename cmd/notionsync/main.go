@@ -16,9 +16,9 @@ func main() {
 	var uuid, url string
 	var err error
 
-	userInput := cli.RealUserInput{} // Assuming RealUserInput is now in the cli package
+	userInput := cli.RealUserInput{}
 	tokenValue := cli.Prompt(userInput, "Please enter the Notion API bearer token: ")
-	token.PersistToken(tokenValue) // Assuming PersistToken is in the token package
+	token.PersistToken(tokenValue)
 
 	for {
 		url = cli.Prompt(userInput, "Please enter the Notion page URL: ")
@@ -27,7 +27,7 @@ func main() {
 			continue
 		}
 
-		uuid, err = fetch.FetchDataBlockString(url) // Assuming FetchDataBlockString is now in the fetch package
+		uuid, err = fetch.FetchDataBlockString(url)
 		if err != nil {
 			fmt.Printf("Error: %v. Please try again.\n", err)
 			continue // If an error occurs (e.g., no UUID found), prompt for the URL again
@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// Extract the page name from the URL and use it as the filename
-	pageName, err := fetch.ExtractNameFromURL(url) // Assuming ExtractNameFromURL is in the fetch package
+	pageName, err := fetch.ExtractNameFromURL(url)
 	if err != nil {
 		fmt.Println("Error extracting page name from URL:", err)
 		return

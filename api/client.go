@@ -28,7 +28,6 @@ func (api *NotionApiClient) GetNotionBlocks(blockID, bearerToken string) (*Resul
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	println("Bearer Token: ", bearerToken)
 	//@TODO REMOVE THIS
 	req.Header.Add("Authorization", "Bearer secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK")
 	// req.Header.Add("Authorization", "Bearer "+bearerToken)

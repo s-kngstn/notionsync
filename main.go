@@ -30,7 +30,7 @@ func main() {
 			continue // If an error occurs (e.g., no UUID found), prompt for the URL again
 		}
 
-		fmt.Printf("Extracted UUID: %s\n", uuid)
+		fmt.Printf("Preparing to sync..")
 		break // Exit the loop if a valid UUID is found
 	}
 

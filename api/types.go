@@ -29,11 +29,15 @@ type Paragraph struct {
 	RichText []RichText `json:"rich_text"`
 }
 
+type LinkObject struct {
+	URL *string `json:"url,omitempty"`
+}
+
 type RichText struct {
 	Type string `json:"type"`
 	Text struct {
-		Content string  `json:"content"`
-		Link    *string `json:"link,omitempty"`
+		Content string      `json:"content"`
+		Link    *LinkObject `json:"link,omitempty"`
 	} `json:"text"`
 	Annotations struct {
 		Bold          bool   `json:"bold"`

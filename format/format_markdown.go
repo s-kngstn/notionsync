@@ -3,8 +3,11 @@ package format
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/s-kngstn/notionsync/api"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func applyAnnotationsToContent(rt api.RichText) string {
@@ -31,12 +34,31 @@ func applyAnnotationsToContent(rt api.RichText) string {
 	return formattedText
 }
 
-func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string) error {
+// toTitleCase converts a string to title case.
+func toTitleCase(input string) string {
+	// Replace hyphens with spaces
+	input = strings.ReplaceAll(input, "-", " ")
+
+	// Create a title cased converter for the specified language
+	caser := cases.Title(language.English)
+
+	// Apply title casing
+	return caser.String(input)
+}
+
+func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageName string) error {
 	file, err := os.Create(outputPath)
 	if err != nil {
 		return fmt.Errorf("error creating markdown file: %w", err)
 	}
 	defer file.Close()
+
+	// Write the page name as the title
+	pageTitle := toTitleCase(pageName)
+	_, err = file.WriteString(fmt.Sprintf("# %s\n\n", pageTitle))
+	if err != nil {
+		return fmt.Errorf("error writing to markdown file: %w", err)
+	}
 
 	for _, block := range results.Results {
 		fmt.Printf("Block ID: %s\n", block.ID)

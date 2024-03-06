@@ -59,7 +59,7 @@ func main() {
 	}
 
 	// Now process and write the results to a Markdown file
-	if err := format.WriteBlocksToMarkdown(results, outputPath); err != nil {
+	if err := format.WriteBlocksToMarkdown(results, outputPath, pageName); err != nil {
 		fmt.Println("Error writing blocks to Markdown:", err)
 	}
 }

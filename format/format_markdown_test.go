@@ -187,6 +187,13 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 					Language: "go",
 				},
 			},
+			{
+				ID:   "10",
+				Type: "bookmark",
+				Bookmark: &api.Bookmark{
+					URL: "https://example.com",
+				},
+			},
 		},
 		// your block definitions...
 	}
@@ -221,6 +228,7 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 		"- [x] To Do Item\n",
 		"- [ ] To Do Item unchecked\n",
 		"```go\nCode Block\n ```\n",
+		"- [https://example.com]\n",
 	}
 
 	for _, ec := range expectedContents {

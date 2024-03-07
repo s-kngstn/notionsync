@@ -27,7 +27,7 @@ func main() {
 			continue
 		}
 
-		uuid, err = fetch.FetchDataBlockString(url)
+		uuid, err = fetch.GetBlockID(url)
 		if err != nil {
 			fmt.Printf("Error: %v. Please try again.\n", err)
 			continue // If an error occurs (e.g., no UUID found), prompt for the URL again

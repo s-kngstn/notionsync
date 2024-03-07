@@ -89,6 +89,9 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			provider = block.Code
 			markdownPrefix = "```" + block.Code.Language + "\n"
 			processingNumberedList = false
+		case "child_page":
+			// [Link Text](filename.md)
+			markdownPrefix = fmt.Sprintf("- [%s](%s.md)", block.ChildPage.Title, ToKebabCase(block.ChildPage.Title))
 		case "bookmark":
 			markdownPrefix = "- [" + block.Bookmark.URL + "]"
 			processingNumberedList = false
@@ -133,6 +136,14 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 
 		// handle the case where the block is a Bookmark
 		if block.Bookmark != nil {
+			_, err := file.WriteString(fmt.Sprintf("%s\n", markdownPrefix))
+			if err != nil {
+				return fmt.Errorf("error writing to markdown file: %w", err)
+			}
+		}
+
+		// handle the case where the block is a child pageName
+		if block.Type == "child_page" {
 			_, err := file.WriteString(fmt.Sprintf("%s\n", markdownPrefix))
 			if err != nil {
 				return fmt.Errorf("error writing to markdown file: %w", err)

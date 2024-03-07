@@ -89,6 +89,9 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			provider = block.Code
 			markdownPrefix = "```" + block.Code.Language + "\n"
 			processingNumberedList = false
+		case "bookmark":
+			markdownPrefix = "- [" + block.Bookmark.URL + "]"
+			processingNumberedList = false
 		case "to_do":
 			provider = block.Todo
 			if block.Todo.Checked {
@@ -125,6 +128,14 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 					return fmt.Errorf("error writing to markdown file: %w", err)
 				}
 				fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
+			}
+		}
+
+		// handle the case where the block is a Bookmark
+		if block.Bookmark != nil {
+			_, err := file.WriteString(fmt.Sprintf("%s\n", markdownPrefix))
+			if err != nil {
+				return fmt.Errorf("error writing to markdown file: %w", err)
 			}
 		}
 	}

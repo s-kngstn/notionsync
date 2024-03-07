@@ -13,20 +13,17 @@ import (
 func applyAnnotationsToContent(rt api.RichText) string {
 	formattedText := rt.Text.Content
 
-	// Apply Markdown syntax for both bold and italic
 	if rt.Annotations.Bold && rt.Annotations.Italic {
 		formattedText = "***" + formattedText + "***"
 	} else if rt.Annotations.Bold {
-		// Apply Markdown syntax for bold
 		formattedText = "**" + formattedText + "**"
 	} else if rt.Annotations.Italic {
-		// Apply Markdown syntax for italic
 		formattedText = "*" + formattedText + "*"
 	}
 
-	// Future enhancements here for other annotations like strikethrough, underline, etc.
+	// Future annotations like strikethrough, underline, etc...
 
-	// Apply Markdown syntax for links
+	// Syntax for links
 	if rt.Text.Link != nil && rt.Text.Link.URL != nil {
 		formattedText = "[" + formattedText + "](" + *rt.Text.Link.URL + ")"
 	}
@@ -34,15 +31,9 @@ func applyAnnotationsToContent(rt api.RichText) string {
 	return formattedText
 }
 
-// toTitleCase converts a string to title case.
 func toTitleCase(input string) string {
-	// Replace hyphens with spaces
 	input = strings.ReplaceAll(input, "-", " ")
-
-	// Create a title cased converter for the specified language
 	caser := cases.Title(language.English)
-
-	// Apply title casing
 	return caser.String(input)
 }
 
@@ -53,7 +44,6 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 	}
 	defer file.Close()
 
-	// Write the page name as the title
 	pageTitle := toTitleCase(pageName)
 	_, err = file.WriteString(fmt.Sprintf("# %s\n\n", pageTitle))
 	if err != nil {

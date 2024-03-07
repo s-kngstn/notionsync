@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"unicode"
 
 	"github.com/s-kngstn/notionsync/api"
 	"golang.org/x/text/cases"
@@ -43,6 +44,28 @@ func toTitleCase(input string) string {
 	input = strings.ReplaceAll(input, "-", " ")
 	caser := cases.Title(language.English)
 	return caser.String(input)
+}
+
+func ToKebabCase(s string) string {
+	var result strings.Builder
+	for i, r := range s {
+		// Convert uppercase letters to lowercase, prefixing them with a dash if it's not the first character
+		// and the previous character isn't a dash, ensuring we don't start with a dash.
+		if unicode.IsUpper(r) {
+			if i > 0 && result.Len() > 0 && result.String()[result.Len()-1] != '-' {
+				result.WriteRune('-')
+			}
+			result.WriteRune(unicode.ToLower(r))
+		} else if unicode.IsDigit(r) || unicode.IsLower(r) {
+			// Directly append digits and lowercase letters
+			result.WriteRune(r)
+		} else if unicode.IsSpace(r) && i > 0 && result.String()[result.Len()-1] != '-' {
+			// Convert spaces to dashes if the last character isn't already a dash.
+			result.WriteRune('-')
+		}
+		// Skip non-alphanumeric, non-space characters
+	}
+	return result.String()
 }
 
 func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageName string) error {
@@ -89,6 +112,9 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			provider = block.Code
 			markdownPrefix = "```" + block.Code.Language + "\n"
 			processingNumberedList = false
+		case "child_page":
+			// [Link Text](filename.md)
+			markdownPrefix = fmt.Sprintf("- [%s](%s.md)", block.ChildPage.Title, ToKebabCase(block.ChildPage.Title))
 		case "bookmark":
 			markdownPrefix = "- [" + block.Bookmark.URL + "]"
 			processingNumberedList = false
@@ -133,6 +159,14 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 
 		// handle the case where the block is a Bookmark
 		if block.Bookmark != nil {
+			_, err := file.WriteString(fmt.Sprintf("%s\n", markdownPrefix))
+			if err != nil {
+				return fmt.Errorf("error writing to markdown file: %w", err)
+			}
+		}
+
+		// handle the case where the block is a child pageName
+		if block.Type == "child_page" {
 			_, err := file.WriteString(fmt.Sprintf("%s\n", markdownPrefix))
 			if err != nil {
 				return fmt.Errorf("error writing to markdown file: %w", err)

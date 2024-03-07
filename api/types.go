@@ -13,17 +13,19 @@ type ResultsWrapper struct {
 }
 
 type Block struct {
-	ID        string     `json:"id"`
-	Type      string     `json:"type"`
-	Heading1  *Heading   `json:"heading_1,omitempty"`
-	Heading2  *Heading   `json:"heading_2,omitempty"`
-	Heading3  *Heading   `json:"heading_3,omitempty"`
-	Todo      *Todo      `json:"to_do,omitempty"`
-	Bookmark  *Bookmark  `json:"bookmark,omitempty"`
-	Bulleted  *ListItem  `json:"bulleted_list_item,omitempty"`
-	Numbered  *ListItem  `json:"numbered_list_item,omitempty"`
-	Paragraph *Paragraph `json:"paragraph,omitempty"`
-	Code      *Code      `json:"code,omitempty"`
+	ID          string     `json:"id"`
+	Type        string     `json:"type"`
+	HasChildren bool       `json:"has_children"`
+	Heading1    *Heading   `json:"heading_1,omitempty"`
+	Heading2    *Heading   `json:"heading_2,omitempty"`
+	Heading3    *Heading   `json:"heading_3,omitempty"`
+	Todo        *Todo      `json:"to_do,omitempty"`
+	Bookmark    *Bookmark  `json:"bookmark,omitempty"`
+	Bulleted    *ListItem  `json:"bulleted_list_item,omitempty"`
+	Numbered    *ListItem  `json:"numbered_list_item,omitempty"`
+	Paragraph   *Paragraph `json:"paragraph,omitempty"`
+	Code        *Code      `json:"code,omitempty"`
+	ChildPage   *ChildPage `json:"child_page,omitempty"`
 }
 
 // Heading represents a generic heading, which can be used for both heading_1, heading_2, heading_3 etc.
@@ -40,6 +42,10 @@ type ListItem struct {
 
 type Bookmark struct {
 	URL string `json:"url"`
+}
+
+type ChildPage struct {
+	Title string `json:"title"`
 }
 
 type Code struct {

@@ -23,7 +23,7 @@ func TestToTitleCase(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
-			got := toTitleCase(tt.input) // Call your toTitleCase function
+			got := toTitleCase(tt.input)
 			if got != tt.expected {
 				t.Errorf("toTitleCase(%q) = %q, want %q", tt.input, got, tt.expected)
 			}
@@ -139,6 +139,22 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 					RichText: []api.RichText{{Text: api.Text{Content: "List Item Three"}}},
 				},
 			},
+			{
+				ID:   "8",
+				Type: "to_do",
+				Todo: &api.Todo{
+					RichText: []api.RichText{{Text: api.Text{Content: "To Do Item"}}},
+					Checked:  true,
+				},
+			},
+			{
+				ID:   "8",
+				Type: "to_do",
+				Todo: &api.Todo{
+					RichText: []api.RichText{{Text: api.Text{Content: "To Do Item unchecked"}}},
+					Checked:  false,
+				},
+			},
 		},
 	}
 
@@ -167,6 +183,8 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 	expectedListItem := "- List Item One\n"
 	expectedNumberedListItem := "1. List Item Two\n"
 	expectedNumberedListItem2 := "2. List Item Three\n"
+	expectedToDoItem := "- [x] To Do Item\n"
+	expectedToDoItemUnchecked := "- [ ] To Do Item unchecked\n"
 	if !strings.Contains(string(content), expectedTitle) ||
 		!strings.Contains(string(content), "Hello World") ||
 		!strings.Contains(string(content), expectedHeading1) ||
@@ -174,7 +192,9 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 		!strings.Contains(string(content), expectedHeading3) ||
 		!strings.Contains(string(content), expectedListItem) ||
 		!strings.Contains(string(content), expectedNumberedListItem) ||
-		!strings.Contains(string(content), expectedNumberedListItem2) {
+		!strings.Contains(string(content), expectedNumberedListItem2) ||
+		!strings.Contains(string(content), expectedToDoItem) ||
+		!strings.Contains(string(content), expectedToDoItemUnchecked) {
 		t.Errorf("File content does not contain expected text. Expected title %q, body text 'Hello World', headings %q, %q, %q, list items %q, %q, %q Got: %v",
 			expectedTitle, expectedHeading1, expectedHeading2, expectedHeading3, expectedListItem, expectedNumberedListItem, expectedNumberedListItem2, string(content))
 	}

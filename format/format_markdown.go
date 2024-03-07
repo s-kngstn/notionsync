@@ -87,6 +87,14 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			provider = block.Paragraph
 			markdownPrefix = "" // No prefix needed for paragraphs
 			processingNumberedList = false
+		case "to_do":
+			provider = block.Todo
+			if block.Todo.Checked {
+				markdownPrefix = "- [x] "
+			} else {
+				markdownPrefix = "- [ ] "
+			}
+			processingNumberedList = false
 		case "bulleted_list_item":
 			provider = block.Bulleted
 			markdownPrefix = "- "

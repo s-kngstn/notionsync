@@ -18,6 +18,7 @@ type Block struct {
 	Heading1  *Heading   `json:"heading_1,omitempty"`
 	Heading2  *Heading   `json:"heading_2,omitempty"`
 	Heading3  *Heading   `json:"heading_3,omitempty"`
+	Todo      *Todo      `json:"to_do,omitempty"`
 	Bulleted  *ListItem  `json:"bulleted_list_item,omitempty"`
 	Numbered  *ListItem  `json:"numbered_list_item,omitempty"`
 	Paragraph *Paragraph `json:"paragraph,omitempty"`
@@ -33,6 +34,11 @@ type Paragraph struct {
 
 type ListItem struct {
 	RichText []RichText `json:"rich_text"`
+}
+
+type Todo struct {
+	RichText []RichText `json:"rich_text"`
+	Checked  bool       `json:"checked"`
 }
 
 type LinkObject struct {
@@ -78,4 +84,9 @@ func (p *Paragraph) GetRichText() []RichText {
 // Implement GetRichText for ListItem
 func (p *ListItem) GetRichText() []RichText {
 	return p.RichText
+}
+
+// Implement GetRichText for to_do
+func (t *Todo) GetRichText() []RichText {
+	return t.RichText
 }

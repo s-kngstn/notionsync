@@ -74,6 +74,30 @@ func TestApplyAnnotationsToContent(t *testing.T) {
 			},
 			expected: "***Test***",
 		},
+		{
+			name: "Strikethrough Annotation",
+			rt: api.RichText{
+				Text: api.Text{
+					Content: "Test",
+				},
+				Annotations: api.Annotations{
+					Strikethrough: true,
+				},
+			},
+			expected: "~~Test~~",
+		},
+		{
+			name: "Code Annotation",
+			rt: api.RichText{
+				Text: api.Text{
+					Content: "Test",
+				},
+				Annotations: api.Annotations{
+					Code: true,
+				},
+			},
+			expected: "`Test`",
+		},
 		// Add more tests for other annotations
 	}
 
@@ -155,7 +179,16 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 					Checked:  false,
 				},
 			},
+			{
+				ID:   "9",
+				Type: "code",
+				Code: &api.Code{
+					RichText: []api.RichText{{Text: api.Text{Content: "Code Block"}}},
+					Language: "go",
+				},
+			},
 		},
+		// your block definitions...
 	}
 
 	outputPath := "./test_output.md"
@@ -175,28 +208,25 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 		t.Errorf("Failed to read file: %v", err)
 	}
 
-	// Check for the expected title, paragraph, and all headings and list item in the content
-	expectedTitle := "# Test Page\n\n"
-	expectedHeading1 := "# Heading One\n"
-	expectedHeading2 := "## Heading Two\n"
-	expectedHeading3 := "### Heading Three\n"
-	expectedListItem := "- List Item One\n"
-	expectedNumberedListItem := "1. List Item Two\n"
-	expectedNumberedListItem2 := "2. List Item Three\n"
-	expectedToDoItem := "- [x] To Do Item\n"
-	expectedToDoItemUnchecked := "- [ ] To Do Item unchecked\n"
-	if !strings.Contains(string(content), expectedTitle) ||
-		!strings.Contains(string(content), "Hello World") ||
-		!strings.Contains(string(content), expectedHeading1) ||
-		!strings.Contains(string(content), expectedHeading2) ||
-		!strings.Contains(string(content), expectedHeading3) ||
-		!strings.Contains(string(content), expectedListItem) ||
-		!strings.Contains(string(content), expectedNumberedListItem) ||
-		!strings.Contains(string(content), expectedNumberedListItem2) ||
-		!strings.Contains(string(content), expectedToDoItem) ||
-		!strings.Contains(string(content), expectedToDoItemUnchecked) {
-		t.Errorf("File content does not contain expected text. Expected title %q, body text 'Hello World', headings %q, %q, %q, list items %q, %q, %q Got: %v",
-			expectedTitle, expectedHeading1, expectedHeading2, expectedHeading3, expectedListItem, expectedNumberedListItem, expectedNumberedListItem2, string(content))
+	// Expected content checks
+	expectedContents := []string{
+		"# Test Page\n\n",
+		"Hello World\n",
+		"# Heading One\n",
+		"## Heading Two\n",
+		"### Heading Three\n",
+		"- List Item One\n",
+		"1. List Item Two\n",
+		"2. List Item Three\n",
+		"- [x] To Do Item\n",
+		"- [ ] To Do Item unchecked\n",
+		"```go\nCode Block\n ```\n",
+	}
+
+	for _, ec := range expectedContents {
+		if !strings.Contains(string(content), ec) {
+			t.Errorf("File content does not contain expected text: %q", ec)
+		}
 	}
 
 	// Clean up

@@ -22,6 +22,7 @@ type Block struct {
 	Bulleted  *ListItem  `json:"bulleted_list_item,omitempty"`
 	Numbered  *ListItem  `json:"numbered_list_item,omitempty"`
 	Paragraph *Paragraph `json:"paragraph,omitempty"`
+	Code      *Code      `json:"code,omitempty"`
 }
 
 // Heading represents a generic heading, which can be used for both heading_1, heading_2, heading_3 etc.
@@ -34,6 +35,11 @@ type Paragraph struct {
 
 type ListItem struct {
 	RichText []RichText `json:"rich_text"`
+}
+
+type Code struct {
+	RichText []RichText `json:"rich_text"`
+	Language string     `json:"language"`
 }
 
 type Todo struct {
@@ -89,4 +95,9 @@ func (p *ListItem) GetRichText() []RichText {
 // Implement GetRichText for to_do
 func (t *Todo) GetRichText() []RichText {
 	return t.RichText
+}
+
+// Implement GetRichText for code
+func (c *Code) GetRichText() []RichText {
+	return c.RichText
 }

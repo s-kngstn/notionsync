@@ -21,7 +21,15 @@ func applyAnnotationsToContent(rt api.RichText) string {
 		formattedText = "*" + formattedText + "*"
 	}
 
-	// Future annotations like strikethrough, underline, etc...
+	if rt.Annotations.Strikethrough {
+		formattedText = "~~" + formattedText + "~~"
+	}
+
+	if rt.Annotations.Code {
+		formattedText = "`" + formattedText + "`"
+	}
+
+	// Syntax for underline is not supported in markdown
 
 	// Syntax for links
 	if rt.Text.Link != nil && rt.Text.Link.URL != nil {
@@ -77,6 +85,10 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			provider = block.Paragraph
 			markdownPrefix = "" // No prefix needed for paragraphs
 			processingNumberedList = false
+		case "code":
+			provider = block.Code
+			markdownPrefix = "```" + block.Code.Language + "\n"
+			processingNumberedList = false
 		case "to_do":
 			provider = block.Todo
 			if block.Todo.Checked {
@@ -103,7 +115,11 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 
 		if provider != nil {
 			for _, rt := range provider.GetRichText() {
-				formattedContent = markdownPrefix + applyAnnotationsToContent(rt) + "\n"
+				if block.Type == "code" {
+					formattedContent = markdownPrefix + rt.Text.Content + "\n ```\n"
+				} else {
+					formattedContent = markdownPrefix + applyAnnotationsToContent(rt) + "\n"
+				}
 				_, err := file.WriteString(formattedContent)
 				if err != nil {
 					return fmt.Errorf("error writing to markdown file: %w", err)

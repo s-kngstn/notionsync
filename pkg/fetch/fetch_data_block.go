@@ -6,7 +6,7 @@ import (
 	"regexp"
 )
 
-func FetchDataBlockString(inputURL string) (string, error) {
+func GetBlockID(inputURL string) (string, error) {
 	// Check if the input string is a valid URL
 	parsedURL, err := url.Parse(inputURL)
 

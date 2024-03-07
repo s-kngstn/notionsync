@@ -19,6 +19,7 @@ type Block struct {
 	Heading2  *Heading   `json:"heading_2,omitempty"`
 	Heading3  *Heading   `json:"heading_3,omitempty"`
 	Todo      *Todo      `json:"to_do,omitempty"`
+	Bookmark  *Bookmark  `json:"bookmark,omitempty"`
 	Bulleted  *ListItem  `json:"bulleted_list_item,omitempty"`
 	Numbered  *ListItem  `json:"numbered_list_item,omitempty"`
 	Paragraph *Paragraph `json:"paragraph,omitempty"`
@@ -35,6 +36,10 @@ type Paragraph struct {
 
 type ListItem struct {
 	RichText []RichText `json:"rich_text"`
+}
+
+type Bookmark struct {
+	URL string `json:"url"`
 }
 
 type Code struct {

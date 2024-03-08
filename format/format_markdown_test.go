@@ -201,6 +201,11 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 					RichText: []api.RichText{{Text: api.Text{Content: "Quote Block"}}},
 				},
 			},
+			{
+				ID:      "12",
+				Type:    "divider",
+				Divider: &api.Divider{},
+			},
 		},
 		// your block definitions...
 	}
@@ -238,6 +243,7 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 		"```go\nCode Block\n ```\n",
 		"- [https://example.com]\n",
 		"> Quote Block\n",
+		"---\n",
 	}
 
 	for _, ec := range expectedContents {

@@ -28,6 +28,7 @@ type Block struct {
 	Code        *Code       `json:"code,omitempty"`
 	ChildPage   *ChildPage  `json:"child_page,omitempty"`
 	LinkToPage  *LinkToPage `json:"link_to_page,omitempty"`
+	Divider     *Divider    `json:"divider,omitempty"`
 }
 
 // Heading represents a generic heading, which can be used for both heading_1, heading_2, heading_3 etc.
@@ -68,6 +69,8 @@ type Todo struct {
 	RichText []RichText `json:"rich_text"`
 	Checked  bool       `json:"checked"`
 }
+
+type Divider struct{}
 
 type LinkObject struct {
 	URL *string `json:"url,omitempty"`

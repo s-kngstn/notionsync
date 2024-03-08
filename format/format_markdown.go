@@ -62,9 +62,6 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 	listItemNumber := 1
 	processingNumberedList := false
 	for _, block := range results.Results {
-		fmt.Printf("Block ID: %s\n", block.ID)
-		fmt.Printf("Block Type: %s\n", block.Type)
-
 		var provider api.RichTextProvider
 		var markdownPrefix string
 		var formattedContent string
@@ -98,7 +95,6 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			markdownPrefix = "---"
 			processingNumberedList = false
 		case "child_page":
-			// [Link Text](filename.md)
 			markdownPrefix = fmt.Sprintf("- [%s](%s.md)", block.ChildPage.Title, strcase.ToKebab(block.ChildPage.Title))
 			processingNumberedList = false
 		case "link_to_page":
@@ -150,7 +146,6 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 				if err != nil {
 					return fmt.Errorf("error writing to markdown file: %w", err)
 				}
-				fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
 			}
 		}
 
@@ -161,7 +156,6 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			}
 		}
 
-		// handle the case where the block is a Bookmark
 		if block.Bookmark != nil {
 			_, err := file.WriteString(fmt.Sprintf("%s\n", markdownPrefix))
 			if err != nil {
@@ -169,7 +163,6 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			}
 		}
 
-		// handle the case where the block is a child pageName
 		if block.Type == "child_page" {
 			_, err := file.WriteString(fmt.Sprintf("%s\n", markdownPrefix))
 			if err != nil {
@@ -178,8 +171,6 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 		}
 	}
 
-	// @TODO: Add a success message if needed
-	fmt.Println("Markdown file successfully created.")
-
+	fmt.Println(pageTitle, " has been written to a file.")
 	return nil
 }

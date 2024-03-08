@@ -48,9 +48,7 @@ func (api *NotionApiClient) GetNotionBlockTitle(blockID, bearerToken string) (st
 		return "", fmt.Errorf("error creating request: %w", err)
 	}
 
-	//@TODO REMOVE THIS
-	req.Header.Add("Authorization", "Bearer secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK")
-	// req.Header.Add("Authorization", "Bearer "+bearerToken)
+	req.Header.Add("Authorization", "Bearer "+bearerToken)
 	req.Header.Add("Notion-Version", "2022-06-28")
 
 	resp, err := api.Client.Do(req)
@@ -80,9 +78,7 @@ func (api *NotionApiClient) GetNotionChildBlocks(blockID, bearerToken string) (*
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	//@TODO REMOVE THIS
-	req.Header.Add("Authorization", "Bearer secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK")
-	// req.Header.Add("Authorization", "Bearer "+bearerToken)
+	req.Header.Add("Authorization", "Bearer "+bearerToken)
 	req.Header.Add("Notion-Version", "2022-06-28")
 
 	resp, err := api.Client.Do(req)

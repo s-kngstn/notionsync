@@ -12,6 +12,13 @@ type ResultsWrapper struct {
 	Results []Block `json:"results"`
 }
 
+// BlockTitleResponse represents the structure to capture the title from a Notion block API response.
+type BlockTitleResponse struct {
+	ChildPage struct {
+		Title string `json:"title"`
+	} `json:"child_page"`
+}
+
 type Block struct {
 	ID          string      `json:"id"`
 	Type        string      `json:"type"`

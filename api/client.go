@@ -28,22 +28,22 @@ func NewNotionApiClient(client HttpClientInterface) *NotionApiClient {
 
 // NotionAPI defines the interface for interacting with the Notion API.
 type NotionAPI interface {
-	getNotionBlockTitle(blockID, bearerToken string) (string, error)
-	getNotionChildBlocks(blockID, bearerToken string) (*ResultsWrapper, error)
+	GetNotionBlockTitle(blockID, bearerToken string) (string, error)
+	GetNotionChildBlocks(blockID, bearerToken string) (*ResultsWrapper, error)
 }
 
 var _ NotionAPI = (*NotionApiClient)(nil)
 
 func FetchBlockTitle(apiClient NotionAPI, pageID, bearerToken string) (string, error) {
-	return apiClient.getNotionBlockTitle(pageID, bearerToken)
+	return apiClient.GetNotionBlockTitle(pageID, bearerToken)
 }
 
 func FetchChildBlocks(apiClient NotionAPI, blockID, bearerToken string) (*ResultsWrapper, error) {
-	return apiClient.getNotionChildBlocks(blockID, bearerToken)
+	return apiClient.GetNotionChildBlocks(blockID, bearerToken)
 }
 
 // GetNotionBlockTitle makes an API request to Notion to get the title of a block by its ID.
-func (api *NotionApiClient) getNotionBlockTitle(blockID, bearerToken string) (string, error) {
+func (api *NotionApiClient) GetNotionBlockTitle(blockID, bearerToken string) (string, error) {
 	url := fmt.Sprintf("https://api.notion.com/v1/blocks/%s", blockID)
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -75,7 +75,7 @@ func (api *NotionApiClient) getNotionBlockTitle(blockID, bearerToken string) (st
 }
 
 // GetNotionChildBlocks performs the actual API call to retrieve the blocks and processes the response.
-func (api *NotionApiClient) getNotionChildBlocks(blockID, bearerToken string) (*ResultsWrapper, error) {
+func (api *NotionApiClient) GetNotionChildBlocks(blockID, bearerToken string) (*ResultsWrapper, error) {
 	url := fmt.Sprintf("https://api.notion.com/v1/blocks/%s/children?page_size=100", blockID)
 
 	req, err := http.NewRequest("GET", url, nil)

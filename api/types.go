@@ -24,6 +24,7 @@ type Block struct {
 	Bulleted    *ListItem   `json:"bulleted_list_item,omitempty"`
 	Numbered    *ListItem   `json:"numbered_list_item,omitempty"`
 	Paragraph   *Paragraph  `json:"paragraph,omitempty"`
+	Quote       *Quote      `json:"quote,omitempty"`
 	Code        *Code       `json:"code,omitempty"`
 	ChildPage   *ChildPage  `json:"child_page,omitempty"`
 	LinkToPage  *LinkToPage `json:"link_to_page,omitempty"`
@@ -34,6 +35,10 @@ type Heading struct {
 	RichText []RichText `json:"rich_text"`
 }
 type Paragraph struct {
+	RichText []RichText `json:"rich_text"`
+}
+
+type Quote struct {
 	RichText []RichText `json:"rich_text"`
 }
 
@@ -117,4 +122,9 @@ func (t *Todo) GetRichText() []RichText {
 // Implement GetRichText for code
 func (c *Code) GetRichText() []RichText {
 	return c.RichText
+}
+
+// Implement GetRichText for Quote
+func (q *Quote) GetRichText() []RichText {
+	return q.RichText
 }

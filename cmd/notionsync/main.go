@@ -45,7 +45,7 @@ func main() {
 	bearerToken := os.Getenv("NOTION_BEARER_TOKEN")
 
 	var wg sync.WaitGroup // WaitGroup to wait for all goroutines to finish
-	// Mutex for safely updating the processedBlocks map
+	// This mutal exclusion is for safely updating the processedBlocks map
 	var mu sync.Mutex
 
 	processedBlocks := make(map[string]map[string]string)

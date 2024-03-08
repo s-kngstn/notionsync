@@ -7,11 +7,8 @@ import (
 	"net/http"
 )
 
-// BlockTitleResponse represents the structure to capture the title from a Notion block API response.
-type BlockTitleResponse struct {
-	ChildPage struct {
-		Title string `json:"title"`
-	} `json:"child_page"`
+type HttpClientInterface interface {
+	Do(req *http.Request) (*http.Response, error)
 }
 
 // NotionApiClient struct holds any dependencies for your API client, e.g., the HTTP client.
@@ -102,7 +99,6 @@ func (api *NotionApiClient) GetNotionChildBlocks(blockID, bearerToken string) (*
 		return nil, fmt.Errorf("API Error: %s - %s", apiError.Code, apiError.Message)
 	}
 
-	// Correctly read the response body here
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error reading response body: %w", err)
@@ -114,9 +110,4 @@ func (api *NotionApiClient) GetNotionChildBlocks(blockID, bearerToken string) (*
 	}
 
 	return &results, nil
-}
-
-// HttpClientInterface defines the interface for the HTTP client, allowing for easy mocking/testing.
-type HttpClientInterface interface {
-	Do(req *http.Request) (*http.Response, error)
 }

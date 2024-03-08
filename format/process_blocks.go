@@ -7,7 +7,7 @@ import (
 	"github.com/s-kngstn/notionsync/api"
 )
 
-func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageName string, apiClient *api.NotionApiClient, bearerToken string, processedBlocks map[string]string) {
+func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageName string, apiClient api.NotionAPI, bearerToken string, processedBlocks map[string]string) {
 	// We need to keep track of the titles of linked pages so we can use them as the file name when writing the linked page's blocks to markdown
 	linkTitles := make(map[string]string)
 
@@ -58,7 +58,7 @@ func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageNam
 	}
 }
 
-func processChildBlocks(parentBlock *api.Block, apiClient *api.NotionApiClient, bearerToken string, processedBlocks map[string]string, linkTitles map[string]string) {
+func processChildBlocks(parentBlock *api.Block, apiClient api.NotionAPI, bearerToken string, processedBlocks map[string]string, linkTitles map[string]string) {
 	childResults, err := apiClient.GetNotionChildBlocks(parentBlock.ID, bearerToken)
 	if err != nil {
 		fmt.Println("Error calling API for child blocks:", err)

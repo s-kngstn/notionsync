@@ -26,6 +26,14 @@ func NewNotionApiClient(client HttpClientInterface) *NotionApiClient {
 	}
 }
 
+// NotionAPI defines the interface for interacting with the Notion API.
+type NotionAPI interface {
+	GetNotionBlockTitle(blockID, bearerToken string) (string, error)
+	GetNotionChildBlocks(blockID, bearerToken string) (*ResultsWrapper, error)
+}
+
+var _ NotionAPI = (*NotionApiClient)(nil)
+
 // GetNotionBlockTitle makes an API request to Notion to get the title of a block by its ID.
 func (api *NotionApiClient) GetNotionBlockTitle(blockID, bearerToken string) (string, error) {
 	url := fmt.Sprintf("https://api.notion.com/v1/blocks/%s", blockID)

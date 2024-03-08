@@ -18,7 +18,6 @@ func main() {
 	token.PersistToken(tokenValue)
 	uuid, url := cli.PromptForURL(userInput)
 
-	// Extract the page name from the URL and use it as the filename
 	pageName, err := fetch.ExtractNameFromURL(url)
 	if err != nil {
 		fmt.Println("Error extracting page name from URL:", err)
@@ -34,20 +33,10 @@ func main() {
 		fmt.Println("Error calling API:", err)
 		return
 	}
-	// Before we process the blocks we need to check if the type is a link_to_page:
-	// - If it is we need to get the page_id from that block, and then check if that page has been processed Before
-	// by checking the processedBlocks map. If it has been processed before we can just link to the file that was created
-	// for that page.
-	// - If it has not been processed before we need to process that page and then link to the file that was created
 
 	// We want to keep track of the processed blocks
 	processedBlocks := make(map[string]string)
 
 	outputPath := fmt.Sprintf("output/%s.md", pageName)
 	format.ProcessBlocks(uuid, results, outputPath, pageName, apiClient, bearerToken, processedBlocks)
-
-	// This is just for debugging purposes @TODO: Remove this
-	// for blockID, filePath := range processedBlocks {
-	// 	fmt.Printf("BlockID: %s, FilePath: %s\n", blockID, filePath)
-	// }
 }

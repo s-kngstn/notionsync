@@ -10,29 +10,47 @@ import (
 func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageName string, apiClient *api.NotionApiClient, bearerToken string, processedBlocks map[string]string) {
 	for _, block := range results.Results {
 		if _, processed := processedBlocks[block.ID]; processed {
-			// If the block has already been processed, skip it or handle as needed
 			continue
 		}
 
-		if block.Type == "child_page" && block.HasChildren {
-			processChildBlocks(&block, apiClient, bearerToken, processedBlocks)
-		} else if block.Type == "link_to_page" {
-			print("LINK TO PAGE")
-			// Handle link_to_page blocks similarly if they require recursive processing
-			if _, processed := processedBlocks[block.LinkToPage.PageID]; processed {
-				fmt.Println("LTP PROCCESSED BEFORE")
-				// I need to link to the file that was created for that page
+		switch block.Type {
+		case "child_page":
+			if block.HasChildren {
+				processChildBlocks(&block, apiClient, bearerToken, processedBlocks)
+			}
+		case "link_to_page":
+			title, err := apiClient.GetNotionBlockTitle(block.LinkToPage.PageID, bearerToken)
+			if err != nil {
+				fmt.Println("Error calling API for block title:", err)
+				continue
+			}
+
+			if _, processed := processedBlocks[block.LinkToPage.PageID]; !processed {
+				linkedResults, err := apiClient.GetNotionChildBlocks(block.LinkToPage.PageID, bearerToken)
+				if err != nil {
+					fmt.Println("Error calling API for LTP child blocks:", err)
+					return
+				}
+				linkedPageName := strcase.ToKebab(title)
+				linkedOutputPath := fmt.Sprintf("output/%s.md", linkedPageName)
+
+				// Mark the block as processed to avoid infinite recursion
+				processedBlocks[block.LinkToPage.PageID] = linkedOutputPath
+
+				if err := WriteBlocksToMarkdown(linkedResults, linkedOutputPath, linkedPageName); err != nil {
+					fmt.Println("Error writing blocks to Markdown:", err)
+					return
+				}
 			} else {
-				fmt.Println("LTP NOT YET PROCCESSED")
-				// I need to processChildBlocks here
+				fmt.Println("LTP PROCESSED BEFORE")
+				// Logic to link to the file that was created for that page goes here
 			}
 		}
 
-		// After processing children, mark the current block as processed
 		processedBlocks[block.ID] = outputPath
 	}
 
-	// After all blocks are processed, write the current page's blocks to markdown
+	// After all blocks are processed, write the original searched URL page's blocks to markdown
 	if err := WriteBlocksToMarkdown(results, outputPath, pageName); err != nil {
 		fmt.Println("Error writing blocks to Markdown:", err)
 	}
@@ -50,7 +68,6 @@ func processChildBlocks(parentBlock *api.Block, apiClient *api.NotionApiClient, 
 	// Before processing child blocks further, mark this parent block as processed to avoid infinite recursion
 	processedBlocks[parentBlock.ID] = childOutputPath
 
-	// Write the child blocks to a Markdown file
 	if err := WriteBlocksToMarkdown(childResults, childOutputPath, childPageName); err != nil {
 		fmt.Println("Error writing blocks to Markdown:", err)
 		return

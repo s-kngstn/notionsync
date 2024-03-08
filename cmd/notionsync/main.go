@@ -64,7 +64,8 @@ func main() {
 
 // processURL handles the processing of a single URL
 func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *sync.Mutex, processedBlocks map[string]map[string]string) {
-	uuid, err := fetch.GetBlockID(url)
+	blockIDFetcher := fetch.DefaultBlockIDFetcher{}
+	uuid, err := blockIDFetcher.GetBlockID(url)
 	if err != nil {
 		fmt.Printf("Error extracting UUID from URL %s: %v\n", url, err)
 		return

@@ -194,6 +194,13 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 					URL: "https://example.com",
 				},
 			},
+			{
+				ID:   "11",
+				Type: "quote",
+				Quote: &api.Quote{
+					RichText: []api.RichText{{Text: api.Text{Content: "Quote Block"}}},
+				},
+			},
 		},
 		// your block definitions...
 	}
@@ -230,6 +237,7 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 		"- [ ] To Do Item unchecked\n",
 		"```go\nCode Block\n ```\n",
 		"- [https://example.com]\n",
+		"> Quote Block\n",
 	}
 
 	for _, ec := range expectedContents {

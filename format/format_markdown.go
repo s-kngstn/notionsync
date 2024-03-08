@@ -86,6 +86,10 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			provider = block.Paragraph
 			markdownPrefix = "" // No prefix needed for paragraphs
 			processingNumberedList = false
+		case "quote":
+			provider = block.Quote
+			markdownPrefix = "> "
+			processingNumberedList = false
 		case "code":
 			provider = block.Code
 			markdownPrefix = "```" + block.Code.Language + "\n"
@@ -93,6 +97,7 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 		case "child_page":
 			// [Link Text](filename.md)
 			markdownPrefix = fmt.Sprintf("- [%s](%s.md)", block.ChildPage.Title, strcase.ToKebab(block.ChildPage.Title))
+			processingNumberedList = false
 		case "link_to_page":
 			// Ensure to use block.LinkToPage.PageID as the key to fetch the title
 			pageID := block.LinkToPage.PageID
@@ -103,6 +108,7 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 					return fmt.Errorf("error writing link to markdown file: %w", err)
 				}
 			}
+			processingNumberedList = false
 		case "bookmark":
 			markdownPrefix = "- [" + block.Bookmark.URL + "]"
 			processingNumberedList = false

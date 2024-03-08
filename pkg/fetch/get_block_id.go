@@ -6,10 +6,14 @@ import (
 	"regexp"
 )
 
-func GetBlockID(inputURL string) (string, error) {
-	// Check if the input string is a valid URL
-	parsedURL, err := url.Parse(inputURL)
+type BlockIDFetcher interface {
+	GetBlockID(inputURL string) (string, error)
+}
 
+type DefaultBlockIDFetcher struct{}
+
+func (f DefaultBlockIDFetcher) GetBlockID(inputURL string) (string, error) {
+	parsedURL, err := url.Parse(inputURL)
 	if err != nil {
 		return "", fmt.Errorf("error parsing URL: %w", err)
 	}

@@ -4,6 +4,27 @@ import (
 	"testing"
 )
 
+type MockInputReader struct {
+	Resp string
+}
+
+func (mir MockInputReader) ReadString(delim byte) (string, error) {
+	return mir.Resp, nil
+}
+
+func TestReadString(t *testing.T) {
+	expected := "test input"
+	mockReader := MockInputReader{Resp: expected + "\n"}
+	userInput := NewRealUserInput(mockReader)
+
+	prompt := "Please enter something: "
+	result := userInput.ReadString(prompt)
+
+	if result != expected {
+		t.Errorf("Expected %q, got %q", expected, result)
+	}
+}
+
 func TestMockUserInput_ReadString(t *testing.T) {
 	tests := []struct {
 		name      string

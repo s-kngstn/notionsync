@@ -1,9 +1,7 @@
 package cli
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -13,12 +11,22 @@ type UserInput interface {
 }
 
 // RealUserInput implements UserInput for real user input scenarios.
-type RealUserInput struct{}
+type InputReader interface {
+	ReadString(delim byte) (string, error)
+}
 
-func (RealUserInput) ReadString(prompt string) string {
-	reader := bufio.NewReader(os.Stdin)
+// Now, modify RealUserInput to accept an InputReader.
+type RealUserInput struct {
+	Reader InputReader
+}
+
+func NewRealUserInput(reader InputReader) RealUserInput {
+	return RealUserInput{Reader: reader}
+}
+
+func (rui RealUserInput) ReadString(prompt string) string {
 	fmt.Print(prompt)
-	input, _ := reader.ReadString('\n')
+	input, _ := rui.Reader.ReadString('\n') // Ignoring error for brevity, handle it in real code.
 	return strings.TrimSpace(input)
 }
 

@@ -7,6 +7,13 @@ import (
 	"net/http"
 )
 
+// BlockTitleResponse represents the structure to capture the title from a Notion block API response.
+type BlockTitleResponse struct {
+	ChildPage struct {
+		Title string `json:"title"`
+	} `json:"child_page"`
+}
+
 // NotionApiClient struct holds any dependencies for your API client, e.g., the HTTP client.
 type NotionApiClient struct {
 	Client HttpClientInterface
@@ -17,6 +24,38 @@ func NewNotionApiClient(client HttpClientInterface) *NotionApiClient {
 	return &NotionApiClient{
 		Client: client,
 	}
+}
+
+// GetNotionBlockTitle makes an API request to Notion to get the title of a block by its ID.
+func (api *NotionApiClient) GetNotionBlockTitle(blockID, bearerToken string) (string, error) {
+	url := fmt.Sprintf("https://api.notion.com/v1/blocks/%s", blockID)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", fmt.Errorf("error creating request: %w", err)
+	}
+
+	//@TODO REMOVE THIS
+	req.Header.Add("Authorization", "Bearer secret_hVDPuHdW5ec7WzM2WicFHNCT7dWy8F5mOE9MMIY2PjK")
+	// req.Header.Add("Authorization", "Bearer "+bearerToken)
+	req.Header.Add("Notion-Version", "2022-06-28")
+
+	resp, err := api.Client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("error sending request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
+	}
+
+	var blockTitleResponse BlockTitleResponse
+	if err := json.NewDecoder(resp.Body).Decode(&blockTitleResponse); err != nil {
+		return "", fmt.Errorf("error parsing JSON: %w", err)
+	}
+
+	return blockTitleResponse.ChildPage.Title, nil
 }
 
 // GetNotionChildBlocks performs the actual API call to retrieve the blocks and processes the response.

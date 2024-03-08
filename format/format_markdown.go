@@ -94,6 +94,9 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 			provider = block.Code
 			markdownPrefix = "```" + block.Code.Language + "\n"
 			processingNumberedList = false
+		case "divider":
+			markdownPrefix = "---"
+			processingNumberedList = false
 		case "child_page":
 			// [Link Text](filename.md)
 			markdownPrefix = fmt.Sprintf("- [%s](%s.md)", block.ChildPage.Title, strcase.ToKebab(block.ChildPage.Title))
@@ -148,6 +151,13 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 					return fmt.Errorf("error writing to markdown file: %w", err)
 				}
 				fmt.Printf("Rich Text Type: %s, Content: %s\n", rt.Type, rt.Text.Content)
+			}
+		}
+
+		if block.Divider != nil {
+			_, err := file.WriteString(fmt.Sprintf("%s\n", markdownPrefix))
+			if err != nil {
+				return fmt.Errorf("error writing to markdown file: %w", err)
 			}
 		}
 

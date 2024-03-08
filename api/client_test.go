@@ -16,7 +16,7 @@ func (m *MockHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	return m.MockDo(req)
 }
 
-func TestGetNotionBlocks(t *testing.T) {
+func TestGetNotionChildBlocks(t *testing.T) {
 	testCases := []struct {
 		name           string
 		mockResponse   string
@@ -56,7 +56,7 @@ func TestGetNotionBlocks(t *testing.T) {
 			}
 			client := NewNotionApiClient(mockClient)
 			blockID, bearerToken := "test-block-id", "test-bearer-token"
-			_, err := client.GetNotionBlocks(blockID, bearerToken)
+			_, err := client.GetNotionChildBlocks(blockID, bearerToken)
 
 			// Check if an error was expected
 			if tc.expectErr && err == nil {

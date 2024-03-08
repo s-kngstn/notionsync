@@ -29,18 +29,25 @@ func main() {
 	apiClient := api.NewNotionApiClient(client)
 	bearerToken := os.Getenv("NOTION_BEARER_TOKEN")
 
-	results, err := apiClient.GetNotionBlocks(uuid, bearerToken)
+	results, err := apiClient.GetNotionChildBlocks(uuid, bearerToken)
 	if err != nil {
 		fmt.Println("Error calling API:", err)
 		return
 	}
-	processedBlocks := make(map[string]string) // Initialize the map
+	// Before we process the blocks we need to check if the type is a link_to_page:
+	// - If it is we need to get the page_id from that block, and then check if that page has been processed Before
+	// by checking the processedBlocks map. If it has been processed before we can just link to the file that was created
+	// for that page.
+	// - If it has not been processed before we need to process that page and then link to the file that was created
+
+	// We want to keep track of the processed blocks
+	processedBlocks := make(map[string]string)
 
 	outputPath := fmt.Sprintf("output/%s.md", pageName)
 	format.ProcessBlocks(uuid, results, outputPath, pageName, apiClient, bearerToken, processedBlocks)
-	// Once processing is complete, print the map to view the processed blocks
+
 	// This is just for debugging purposes @TODO: Remove this
-	for blockID, filePath := range processedBlocks {
-		fmt.Printf("BlockID: %s, FilePath: %s\n", blockID, filePath)
-	}
+	// for blockID, filePath := range processedBlocks {
+	// 	fmt.Printf("BlockID: %s, FilePath: %s\n", blockID, filePath)
+	// }
 }

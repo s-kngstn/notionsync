@@ -56,7 +56,7 @@ func TestGetNotionChildBlocks(t *testing.T) {
 			}
 			client := NewNotionApiClient(mockClient)
 			blockID, bearerToken := "test-block-id", "test-bearer-token"
-			_, err := client.GetNotionChildBlocks(blockID, bearerToken)
+			_, err := FetchChildBlocks(client, blockID, bearerToken)
 
 			// Check if an error was expected
 			if tc.expectErr && err == nil {

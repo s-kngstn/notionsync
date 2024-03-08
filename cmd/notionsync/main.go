@@ -34,7 +34,13 @@ func main() {
 		fmt.Println("Error calling API:", err)
 		return
 	}
+	processedBlocks := make(map[string]string) // Initialize the map
 
 	outputPath := fmt.Sprintf("output/%s.md", pageName)
-	format.ProcessBlocks(results, outputPath, pageName, apiClient, bearerToken)
+	format.ProcessBlocks(uuid, results, outputPath, pageName, apiClient, bearerToken, processedBlocks)
+	// Once processing is complete, print the map to view the processed blocks
+	// This is just for debugging purposes @TODO: Remove this
+	for blockID, filePath := range processedBlocks {
+		fmt.Printf("BlockID: %s, FilePath: %s\n", blockID, filePath)
+	}
 }

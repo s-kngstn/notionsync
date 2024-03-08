@@ -85,6 +85,7 @@ func main() {
 
 	// Wait for all goroutines to finish
 	wg.Wait()
+	fmt.Println("All URLs processed")
 }
 
 // processURL handles the processing of a single URL

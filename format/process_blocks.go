@@ -3,6 +3,7 @@ package format
 import (
 	"fmt"
 
+	"github.com/iancoleman/strcase"
 	"github.com/s-kngstn/notionsync/api"
 )
 
@@ -18,7 +19,7 @@ func ProcessBlocks(results *api.ResultsWrapper, outputPath string, pageName stri
 				return
 			}
 			// The output path will be the same as the parent page, but with the title of the child page name
-			childPageName := ToKebabCase(block.ChildPage.Title)
+			childPageName := strcase.ToKebab(block.ChildPage.Title)
 			childOutputPath := fmt.Sprintf("output/%s.md", childPageName)
 			// Write the child blocks to a Markdown file with the title of the child pageName
 			if err := WriteBlocksToMarkdown(childResults, childOutputPath, childPageName); err != nil {

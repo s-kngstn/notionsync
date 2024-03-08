@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"net/http"
@@ -13,26 +12,11 @@ import (
 	"github.com/s-kngstn/notionsync/pkg/cli"
 	"github.com/s-kngstn/notionsync/pkg/fetch"
 	"github.com/s-kngstn/notionsync/pkg/token"
+	"github.com/s-kngstn/notionsync/pkg/utils"
 )
 
-func readURLs(filePath string) ([]string, error) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	var urls []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		urls = append(urls, scanner.Text())
-	}
-	return urls, scanner.Err()
-}
-
 func main() {
-	defaultFilePath := "PLACEHOLDER" // Indicates no file path was provided
-	filePath := flag.String("file", defaultFilePath, "Path to the file containing URLs")
+	filePath := flag.String("file", "", "Path to the file containing URLs")
 	flag.Parse()
 
 	userInput := cli.RealUserInput{}
@@ -42,14 +26,14 @@ func main() {
 	var urls []string
 	var err error
 
-	if *filePath == defaultFilePath {
+	if *filePath == "" {
 		// No file path provided, prompt for a single URL
 		userInput := cli.RealUserInput{}
 		url := cli.Prompt(userInput, "Please enter the Notion page URL: ")
 		urls = append(urls, url)
 	} else {
 		// File path provided, read URLs from the file
-		urls, err = readURLs(*filePath)
+		urls, err = utils.ReadURLs(*filePath)
 		if err != nil {
 			fmt.Printf("Failed to read URLs from file: %v\n", err)
 			return

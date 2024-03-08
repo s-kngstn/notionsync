@@ -200,7 +200,8 @@ func TestWriteBlocksToMarkdown(t *testing.T) {
 
 	outputPath := "./test_output.md"
 	pageName := "Test Page"
-	if err := WriteBlocksToMarkdown(results, outputPath, pageName); err != nil {
+	pageTitles := map[string]string{}
+	if err := WriteBlocksToMarkdown(results, outputPath, pageName, pageTitles); err != nil {
 		t.Errorf("WriteBlocksToMarkdown returned an error: %v", err)
 	}
 

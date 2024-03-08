@@ -8,6 +8,9 @@ import (
 )
 
 func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageName string, apiClient *api.NotionApiClient, bearerToken string, processedBlocks map[string]string) {
+	// We need to keep track of the titles of linked pages so we can use them as the file name when writing the linked page's blocks to markdown
+	linkTitles := make(map[string]string)
+
 	for _, block := range results.Results {
 		if _, processed := processedBlocks[block.ID]; processed {
 			continue
@@ -16,7 +19,7 @@ func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageNam
 		switch block.Type {
 		case "child_page":
 			if block.HasChildren {
-				processChildBlocks(&block, apiClient, bearerToken, processedBlocks)
+				processChildBlocks(&block, apiClient, bearerToken, processedBlocks, linkTitles)
 			}
 		case "link_to_page":
 			title, err := apiClient.GetNotionBlockTitle(block.LinkToPage.PageID, bearerToken)
@@ -24,6 +27,8 @@ func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageNam
 				fmt.Println("Error calling API for block title:", err)
 				continue
 			}
+
+			linkTitles[block.LinkToPage.PageID] = title
 
 			if _, processed := processedBlocks[block.LinkToPage.PageID]; !processed {
 				linkedResults, err := apiClient.GetNotionChildBlocks(block.LinkToPage.PageID, bearerToken)
@@ -37,13 +42,10 @@ func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageNam
 				// Mark the block as processed to avoid infinite recursion
 				processedBlocks[block.LinkToPage.PageID] = linkedOutputPath
 
-				if err := WriteBlocksToMarkdown(linkedResults, linkedOutputPath, linkedPageName); err != nil {
+				if err := WriteBlocksToMarkdown(linkedResults, linkedOutputPath, linkedPageName, linkTitles); err != nil {
 					fmt.Println("Error writing blocks to Markdown:", err)
 					return
 				}
-			} else {
-				fmt.Println("LTP PROCESSED BEFORE")
-				// Logic to link to the file that was created for that page goes here
 			}
 		}
 
@@ -51,12 +53,12 @@ func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageNam
 	}
 
 	// After all blocks are processed, write the original searched URL page's blocks to markdown
-	if err := WriteBlocksToMarkdown(results, outputPath, pageName); err != nil {
+	if err := WriteBlocksToMarkdown(results, outputPath, pageName, linkTitles); err != nil {
 		fmt.Println("Error writing blocks to Markdown:", err)
 	}
 }
 
-func processChildBlocks(parentBlock *api.Block, apiClient *api.NotionApiClient, bearerToken string, processedBlocks map[string]string) {
+func processChildBlocks(parentBlock *api.Block, apiClient *api.NotionApiClient, bearerToken string, processedBlocks map[string]string, linkTitles map[string]string) {
 	childResults, err := apiClient.GetNotionChildBlocks(parentBlock.ID, bearerToken)
 	if err != nil {
 		fmt.Println("Error calling API for child blocks:", err)
@@ -68,7 +70,7 @@ func processChildBlocks(parentBlock *api.Block, apiClient *api.NotionApiClient, 
 	// Before processing child blocks further, mark this parent block as processed to avoid infinite recursion
 	processedBlocks[parentBlock.ID] = childOutputPath
 
-	if err := WriteBlocksToMarkdown(childResults, childOutputPath, childPageName); err != nil {
+	if err := WriteBlocksToMarkdown(childResults, childOutputPath, childPageName, linkTitles); err != nil {
 		fmt.Println("Error writing blocks to Markdown:", err)
 		return
 	}
@@ -76,7 +78,7 @@ func processChildBlocks(parentBlock *api.Block, apiClient *api.NotionApiClient, 
 	// If child blocks have their own children, recursively process them too
 	for _, childBlock := range childResults.Results {
 		if childBlock.HasChildren {
-			processChildBlocks(&childBlock, apiClient, bearerToken, processedBlocks)
+			processChildBlocks(&childBlock, apiClient, bearerToken, processedBlocks, linkTitles)
 		}
 	}
 }

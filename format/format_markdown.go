@@ -46,7 +46,7 @@ func toTitleCase(input string) string {
 	return caser.String(input)
 }
 
-func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageName string) error {
+func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageName string, linkTitles map[string]string) error {
 	file, err := os.Create(outputPath)
 	if err != nil {
 		return fmt.Errorf("error creating markdown file: %w", err)
@@ -93,6 +93,16 @@ func WriteBlocksToMarkdown(results *api.ResultsWrapper, outputPath string, pageN
 		case "child_page":
 			// [Link Text](filename.md)
 			markdownPrefix = fmt.Sprintf("- [%s](%s.md)", block.ChildPage.Title, strcase.ToKebab(block.ChildPage.Title))
+		case "link_to_page":
+			// Ensure to use block.LinkToPage.PageID as the key to fetch the title
+			pageID := block.LinkToPage.PageID
+			if title, ok := linkTitles[pageID]; ok {
+				markdownPrefix = fmt.Sprintf("- [%s](%s.md)\n", title, strcase.ToKebab(title))
+				_, err := file.WriteString(markdownPrefix)
+				if err != nil {
+					return fmt.Errorf("error writing link to markdown file: %w", err)
+				}
+			}
 		case "bookmark":
 			markdownPrefix = "- [" + block.Bookmark.URL + "]"
 			processingNumberedList = false

@@ -28,7 +28,7 @@ func main() {
 	apiClient := api.NewNotionApiClient(client)
 	bearerToken := os.Getenv("NOTION_BEARER_TOKEN")
 
-	results, err := apiClient.GetNotionChildBlocks(uuid, bearerToken)
+	results, err := api.FetchChildBlocks(apiClient, uuid, bearerToken)
 	if err != nil {
 		fmt.Println("Error calling API:", err)
 		return

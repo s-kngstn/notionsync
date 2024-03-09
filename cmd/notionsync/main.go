@@ -25,8 +25,14 @@ func main() {
 	appEnv := os.Getenv("APP_ENV")
 
 	tokenFlag := flag.String("token", "", "Notion API bearer token")
-	filePath := flag.String("file", "", "Path to the file containing URLs")
+	filePath := flag.String("file", "", "Path to the file containing URLs to process")
+	outputDir := flag.String("dir", "notionsync", "Directory to save markdown files in")
 	flag.Parse()
+
+	// Ensure output directory exists
+	if _, err := os.Stat(*outputDir); os.IsNotExist(err) {
+		os.Mkdir(*outputDir, 0755)
+	}
 
 	if appEnv == "development" {
 		if err := godotenv.Load(); err != nil {
@@ -79,7 +85,7 @@ func main() {
 		wg.Add(1)
 		go func(url string) {
 			defer wg.Done()
-			processURL(url, apiClient, bearerToken, &mu, processedBlocks)
+			processURL(url, apiClient, bearerToken, &mu, processedBlocks, *outputDir)
 		}(url)
 	}
 
@@ -89,7 +95,7 @@ func main() {
 }
 
 // processURL handles the processing of a single URL
-func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *sync.Mutex, processedBlocks map[string]map[string]string) {
+func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *sync.Mutex, processedBlocks map[string]map[string]string, outputDir string) {
 	blockIDFetcher := fetch.DefaultBlockIDFetcher{}
 	uuid, err := blockIDFetcher.GetBlockID(url)
 	if err != nil {
@@ -108,8 +114,8 @@ func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *syn
 		return
 	}
 
-	outputPath := fmt.Sprintf("output/%s.md", pageName)
-
+	outputPath := fmt.Sprintf("%s/%s.md", outputDir, pageName)
+	fmt.Printf("outputPath: %s\n", outputPath)
 	// Initialize the inner map if it doesn't exist
 	mu.Lock()
 	if processedBlocks[uuid] == nil {
@@ -119,5 +125,5 @@ func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *syn
 	// You can add more entries to processedBlocks[uuid] as needed
 	mu.Unlock()
 
-	format.ProcessBlocks(uuid, results, outputPath, pageName, apiClient, bearerToken, processedBlocks[uuid])
+	format.ProcessBlocks(uuid, results, outputPath, pageName, apiClient, bearerToken, processedBlocks[uuid], outputDir)
 }

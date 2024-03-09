@@ -2,8 +2,6 @@
 
 NotionSync is a command-line tool designed to synchronize your [Notion](https://www.notion.so/) notes to your local machine in markdown format. It supports a variety of markdown features, making your Notion content easily accessible and editable on your local device.
 
-Need an API key? [Get it here](https://www.notion.so/my-integrations).
-
 Either set the `NOTION_API_KEY` environment variable or pass it as an argument.
 
 ## Features

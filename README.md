@@ -26,8 +26,10 @@ NotionSync currently supports syncing the following markdown formats:
 
 notionsync offers several flags to customize its operation:
 
-- token: Notion API bearer token. If not provided, the tool will attempt to use the environment variable NOTION_API_KEY.
-- file: Path to the file containing Notion page URLs to sync. If not provided, the tool will prompt for a single URL input.
+- `-token`: Notion API bearer token. If not provided, the tool will attempt to use the environment variable NOTION_API_KEY.
+- `-file`: Path to the file containing Notion page URLs to sync. If not provided, the tool will prompt for a single URL input.
+- `-dir`: Specifies the directory where the markdown files will be saved. The default is `notionsync` if this flag is not provided.
+
 
 Example Commands
 Sync using an API token passed as a flag:
@@ -38,4 +40,9 @@ Sync using an API token passed as a flag:
 Sync with the API key set as an environment variable (or in a .env file for development):
 ```bash
 ./notionsync -file="path/to/your/url_file.txt"
+```
+
+Sync with API key and custom directory:
+```bash
+./notionsync -file="path/to/your/url_file.txt" -dir="/path/to/custom/directory"
 ```

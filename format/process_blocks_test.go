@@ -48,13 +48,14 @@ func TestProcessBlocksMarkdownOutput(t *testing.T) {
 	bearerToken := "test-token"
 	pageName := "Test Page"
 	processedBlocks := make(map[string]string)
+	outputDir := "test-output-dir"
 	results := &api.ResultsWrapper{
 		Results: []api.Block{
 			// Define a simple block structure for testing
 		},
 	}
 
-	ProcessBlocks(uuid, results, outputPath, pageName, mockAPI, bearerToken, processedBlocks)
+	ProcessBlocks(uuid, results, outputPath, pageName, mockAPI, bearerToken, processedBlocks, outputDir)
 
 	// Read the content of the temporary file
 	content, err := os.ReadFile(outputPath)
@@ -88,13 +89,14 @@ func TestProcessBlocksWithFetchBlockTitleError(t *testing.T) {
 	bearerToken := "error-test-token"
 	pageName := "Error Test Page"
 	processedBlocks := make(map[string]string)
+	outputDir := "error-test-output-dir"
 	results := &api.ResultsWrapper{
 		Results: []api.Block{
 			{ID: "error1", Type: "link_to_page", LinkToPage: &api.LinkToPage{PageID: "errorPage"}},
 		},
 	}
 
-	ProcessBlocks(uuid, results, outputPath, pageName, mockAPI, bearerToken, processedBlocks)
+	ProcessBlocks(uuid, results, outputPath, pageName, mockAPI, bearerToken, processedBlocks, outputDir)
 
 	// Error handling test logic remains the same
 }

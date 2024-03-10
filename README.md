@@ -30,7 +30,6 @@ notionsync offers several flags to customize its operation:
 - `-file`: Path to the file containing Notion page URLs to sync. If not provided, the tool will prompt for a single URL input.
 - `-dir`: Specifies the directory where the markdown files will be saved. The default is `notionsync` if this flag is not provided.
 
-
 Example Commands
 Sync using an API token passed as a flag:
 ```bash

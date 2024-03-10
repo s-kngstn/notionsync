@@ -22,8 +22,6 @@ func main() {
 		fmt.Println("Error loading .env file or no .env file found:", err)
 	}
 
-	appEnv := os.Getenv("APP_ENV")
-
 	tokenFlag := flag.String("token", "", "Notion API bearer token")
 	filePath := flag.String("file", "", "Path to the file containing URLs to process")
 	outputDir := flag.String("dir", "notionsync", "Directory to save markdown files in")
@@ -34,16 +32,9 @@ func main() {
 		os.Mkdir(*outputDir, 0755)
 	}
 
-	if appEnv == "development" {
-		if err := godotenv.Load(); err != nil {
-			fmt.Println("No .env file found")
-		}
-	}
-
 	bearerToken := os.Getenv("NOTION_API_KEY")
 
-	// If in production and token not provided through flag, prompt for it
-	if appEnv != "development" && *tokenFlag == "" {
+	if bearerToken == "" && *tokenFlag == "" {
 		// Initialize RealUserInput with os.Stdin
 		if bearerToken == "" {
 			inputReader := bufio.NewReader(os.Stdin)

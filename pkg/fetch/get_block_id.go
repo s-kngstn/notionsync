@@ -1,16 +1,39 @@
 package fetch
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"regexp"
 )
 
+type URLFetcher interface {
+	CheckURL(inputURL string) (bool, error)
+}
 type BlockIDFetcher interface {
 	GetBlockID(inputURL string) (string, error)
 }
 
 type DefaultBlockIDFetcher struct{}
+type DefaultURLChecker struct{}
+
+func (f DefaultURLChecker) CheckURL(inputURL string) (bool, error) {
+	parsedURL, err := url.Parse(inputURL)
+	if err != nil {
+		// Return false and the parsing error if URL parsing fails.
+		return false, err
+	}
+
+	// Define the correct domain. This is just an example; adjust it as needed.
+	const correctDomain = "www.notion.so"
+	if parsedURL.Hostname() != correctDomain {
+		// Return false and an error if the domain does not match.
+		return false, errors.New("URL domain needs to be from notion.so, skipping...")
+	}
+
+	// If we reach this point, the domain matches.
+	return true, nil
+}
 
 func (f DefaultBlockIDFetcher) GetBlockID(inputURL string) (string, error) {
 	parsedURL, err := url.Parse(inputURL)

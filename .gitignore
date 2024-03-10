@@ -23,3 +23,4 @@ go.work
 # Project specific output directory
 output/
 .env
+TODO.md

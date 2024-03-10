@@ -8,7 +8,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/joho/godotenv"
 	"github.com/s-kngstn/notionsync/api"
 	"github.com/s-kngstn/notionsync/format"
 	"github.com/s-kngstn/notionsync/pkg/cli"
@@ -17,14 +16,11 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file or no .env file found:", err)
-	}
-
+	var err error
+	bearerToken := os.Getenv("NOTION_API_KEY")
 	tokenFlag := flag.String("token", "", "Notion API bearer token")
 	filePath := flag.String("file", "", "Path to the file containing URLs to process")
-	outputDir := flag.String("dir", "notionsync", "Directory to save markdown files in")
+	outputDir := flag.String("dir", "notion-notes", "Directory to save markdown files in")
 	flag.Parse()
 
 	// Ensure output directory exists
@@ -32,10 +28,9 @@ func main() {
 		os.Mkdir(*outputDir, 0755)
 	}
 
-	bearerToken := os.Getenv("NOTION_API_KEY")
-
 	if bearerToken == "" && *tokenFlag == "" {
 		// Initialize RealUserInput with os.Stdin
+		fmt.Println("No Notion API Token found in env[`NOTION_API_KEY`] or flag provided")
 		if bearerToken == "" {
 			inputReader := bufio.NewReader(os.Stdin)
 			userInput := cli.NewRealUserInput(inputReader)
@@ -87,6 +82,7 @@ func main() {
 
 // processURL handles the processing of a single URL
 func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *sync.Mutex, processedBlocks map[string]map[string]string, outputDir string) {
+	// Checking if the URL is a notion page
 	urlChecker := fetch.DefaultURLChecker{}
 	urlIsValid, err := urlChecker.CheckURL(url)
 	if err != nil {
@@ -111,6 +107,7 @@ func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *syn
 	results, err := api.FetchChildBlocks(apiClient, uuid, bearerToken)
 	if err != nil {
 		fmt.Printf("Error calling API for URL %s: %v\n", url, err)
+		// @todo if there is a error here we need to do a graceful shutdown and have the user try again
 		return
 	}
 

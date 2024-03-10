@@ -87,6 +87,15 @@ func main() {
 
 // processURL handles the processing of a single URL
 func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *sync.Mutex, processedBlocks map[string]map[string]string, outputDir string) {
+	urlChecker := fetch.DefaultURLChecker{}
+	urlIsValid, err := urlChecker.CheckURL(url)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
+
+	if !urlIsValid {
+		return
+	}
 	blockIDFetcher := fetch.DefaultBlockIDFetcher{}
 	uuid, err := blockIDFetcher.GetBlockID(url)
 	if err != nil {
@@ -106,7 +115,6 @@ func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *syn
 	}
 
 	outputPath := fmt.Sprintf("%s/%s.md", outputDir, pageName)
-	fmt.Printf("outputPath: %s\n", outputPath)
 	// Initialize the inner map if it doesn't exist
 	mu.Lock()
 	if processedBlocks[uuid] == nil {

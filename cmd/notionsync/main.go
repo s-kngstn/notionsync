@@ -80,7 +80,6 @@ func main() {
 	fmt.Println("All URLs processed")
 }
 
-// processURL handles the processing of a single URL
 func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *sync.Mutex, processedBlocks map[string]map[string]string, outputDir string) {
 	// Checking if the URL is a notion page
 	urlChecker := fetch.DefaultURLChecker{}

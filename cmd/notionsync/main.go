@@ -77,7 +77,24 @@ func main() {
 
 	// Wait for all goroutines to finish
 	wg.Wait()
-	fmt.Println("All URLs processed")
+
+	// @TODO
+	// Lets check the contents of the outputDir to see if any files have been created. If the directory is empty, we can skip this message
+	// if the contents is less than 2, and more than 0 we can say URL processed
+	dir, err := os.ReadDir(*outputDir)
+	if err != nil {
+		fmt.Printf("Error reading directory: %v\n", err)
+		return
+	}
+
+	switch {
+	case len(dir) == 0:
+		fmt.Println("No URLs processed")
+	case len(dir) == 1:
+		fmt.Println("URL processed")
+	default:
+		fmt.Println("URLs processed")
+	}
 }
 
 func processURL(url string, apiClient api.NotionAPI, bearerToken string, mu *sync.Mutex, processedBlocks map[string]map[string]string, outputDir string) {

@@ -22,6 +22,31 @@ NotionSync currently supports syncing the following markdown formats:
 - Go 1.15 or higher
 - Notion API key. You can obtain one by creating an integration at [Notion Integrations](https://www.notion.so/my-integrations).
 
+## Installing and compiling from source
+
+If you want to contribute to the project or you just want to build from source for whatever reason, follow these steps:
+
+### clone:
+```bash
+git clone https://github.com/s-kngstn/notionsync
+cd goreleaser
+```
+
+### get the dependencies:
+```bash
+go mod tidy
+```
+
+### build:
+```bash
+go build -o notionsync .
+```
+
+### run:
+```bash
+./notionsync
+```
+
 ## Usage
 
 notionsync offers several flags to customize its operation:

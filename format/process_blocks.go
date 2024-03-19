@@ -28,9 +28,6 @@ func ProcessBlocks(uuid string, results *api.ResultsWrapper, outputPath, pageNam
 	WriteBlocksToMarkdown(results, outputPath, pageName, linkTitles)
 }
 
-// shift + v % in vim will select the entire block of code
-// in vim dap will delete the entire block of code
-// :GoCoverage will show the coverage of the code
 func processLinkToPageBlock(block *api.Block, apiClient api.NotionAPI, bearerToken string, processedBlocks, linkTitles map[string]string, outputDir string) {
 	title, err := api.FetchBlockTitle(apiClient, block.LinkToPage.PageID, bearerToken)
 	if err != nil {

@@ -69,7 +69,6 @@ func (api *NotionApiClient) GetNotionBlockTitle(blockID, bearerToken string) (st
 	return blockTitleResponse.ChildPage.Title, nil
 }
 
-// GetNotionChildBlocks performs the actual API call to retrieve the blocks and processes the response.
 func (api *NotionApiClient) GetNotionChildBlocks(blockID, bearerToken string) (*ResultsWrapper, error) {
 	url := fmt.Sprintf("https://api.notion.com/v1/blocks/%s/children?page_size=100", blockID)
 

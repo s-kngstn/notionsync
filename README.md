@@ -29,7 +29,7 @@ If you want to contribute to the project or you just want to build from source f
 ### clone:
 ```bash
 git clone https://github.com/s-kngstn/notionsync
-cd goreleaser
+cd notionsync
 ```
 
 ### get the dependencies:
